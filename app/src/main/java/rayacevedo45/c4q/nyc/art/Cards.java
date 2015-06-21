@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 public class Cards extends ActionBarActivity {
     TextView welcome;
+    private String name,birthdayS,zipcodeS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,7 +17,9 @@ public class Cards extends ActionBarActivity {
         setContentView(R.layout.activity_cards);
 
         Bundle extras = getIntent().getExtras();
-        String name = extras.getString("name");
+        name = extras.getString("name");
+        birthdayS = extras.getString("birthday");
+        zipcodeS = extras.getString("zipcode");
 
         welcome = (TextView) findViewById(R.id.welcomeTV);
         welcome.setText("Hello, " + name);

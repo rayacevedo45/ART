@@ -28,11 +28,13 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Birthday (mm-dd)"/>
+        android:hint="Birthday (mm-dd)"
+        android:id="@+id/birthdayET"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Zip Code"/>
+        android:hint="Zip Code"
+        android:id="@+id/zipcodeET"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
