@@ -10,8 +10,8 @@ import android.widget.EditText;
 
 
 public class MainActivity extends ActionBarActivity {
-    public static String name;
-    EditText firstName;
+    private String name,birthDayS,zipcodeS;
+    EditText firstName, birthDay, zipcode;
 
 
     @Override
@@ -20,7 +20,8 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         firstName = (EditText) findViewById(R.id.firstNameET);
-
+        birthDay = (EditText) findViewById(R.id.birthdayET);
+        zipcode = (EditText) findViewById(R.id.zipcodeET);
 
     }
 
@@ -48,8 +49,12 @@ public class MainActivity extends ActionBarActivity {
     }
     public void next (View v){
         name = firstName.getText().toString();
+        birthDayS = birthDay.getText().toString();
+        zipcodeS = zipcode.getText().toString();
         Intent intent = new Intent(MainActivity.this, Cards.class);
         intent.putExtra("name",name);
+        intent.putExtra("birthday", birthDayS);
+        intent.putExtra("zipcode", zipcodeS);
         startActivity(intent);
     }
 }
