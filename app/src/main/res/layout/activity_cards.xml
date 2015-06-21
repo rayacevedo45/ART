@@ -9,8 +9,14 @@
 
     <TextView android:text="@string/hello_world"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="54dp"
         android:textSize="30sp"
         android:id="@+id/welcomeTV"/>
+
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="rayacevedo45.c4q.nyc.art.CardsListFragment" />
 
 </LinearLayout>
