@@ -11,6 +11,7 @@ public class Cards extends ActionBarActivity {
     TextView welcome;
     private String name,birthdayS,zipcodeS;
 
+    public static final String[] CARDS = {"To-Do List", "Horoscope", "Weather", "Stocks"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,4 +48,9 @@ public class Cards extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
+
+
+
 }
