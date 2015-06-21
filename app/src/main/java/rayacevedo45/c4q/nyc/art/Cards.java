@@ -1,34 +1,32 @@
 package rayacevedo45.c4q.nyc.art;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
+import android.widget.TextView;
 
 
-public class MainActivity extends ActionBarActivity {
-    public static String name;
-    EditText firstName;
-
+public class Cards extends ActionBarActivity {
+    TextView welcome;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_cards);
 
-        firstName = (EditText) findViewById(R.id.firstNameET);
+        Bundle extras = getIntent().getExtras();
+        String name = extras.getString("name");
 
-
+        welcome = (TextView) findViewById(R.id.welcomeTV);
+        welcome.setText("Hello, " + name);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_cards, menu);
         return true;
     }
 
@@ -45,11 +43,5 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-    public void next (View v){
-        name = firstName.getText().toString();
-        Intent intent = new Intent(MainActivity.this, Cards.class);
-        intent.putExtra("name",name);
-        startActivity(intent);
     }
 }
