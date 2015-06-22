@@ -22,7 +22,6 @@ public class MainActivity extends ActionBarActivity {
         firstName = (EditText) findViewById(R.id.firstNameET);
         birthDay = (EditText) findViewById(R.id.birthdayET);
         zipcode = (EditText) findViewById(R.id.zipcodeET);
-
     }
 
 
