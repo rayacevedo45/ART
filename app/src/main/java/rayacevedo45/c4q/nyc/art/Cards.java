@@ -4,7 +4,13 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ExpandableListView;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 
 public class Cards extends ActionBarActivity {
@@ -17,6 +23,8 @@ public class Cards extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cards);
 
+        //ExpandableListView listView = (ExpandableListView) findViewById(R.id.listview);
+
         Bundle extras = getIntent().getExtras();
         name = extras.getString("name");
         birthdayS = extras.getString("birthday");
@@ -24,6 +32,9 @@ public class Cards extends ActionBarActivity {
 
         welcome = (TextView) findViewById(R.id.welcomeTV);
         welcome.setText("Hello, " + name);
+
+        //ArrayList<Group> groups = prepareData();
+
     }
 
 
@@ -48,6 +59,35 @@ public class Cards extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+//    public ArrayList<Group> prepareData() {
+//
+//        Group group1 = new Group("Weather");
+//        group1.children.add("SAMPLE");
+//        group1.children.add("test");
+//
+//        Group group2 = new Group("Julio Boes");
+//        group2.children.add("wr=sss");
+//        group2.children.add("xxxxxxx");
+//
+//        Group group3 = new Group("Ron Osmun");
+//        group3.children.add("ron.osmun@gmail.com");
+//        group3.children.add("osmun.ron@gmail.com");
+//
+//        Group group4 = new Group("Angelica Tebbs");
+//        group4.children.add("angelica.tebbs@gmail.com");
+//        group4.children.add("tebbs.angelica@gmail.com");
+//
+//        ArrayList<Group> groups = new ArrayList<Group>();
+//        groups.add(group1);
+//        groups.add(group2);
+//        groups.add(group3);
+//        groups.add(group4);
+//
+//        return groups;
+//    }
+
+
 
 
 
