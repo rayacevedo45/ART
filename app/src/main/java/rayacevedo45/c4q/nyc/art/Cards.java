@@ -164,9 +164,7 @@ public class Cards extends ActionBarActivity {
         @Override
         public String doInBackground(Void... voids) {
             String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign;
-            JSONParser parser1 = new JSONParser();
-            String dailyHoroscope = parser1.parse(horoscopeAPISite);
-            return dailyHoroscope;
+            return parser.parse(horoscopeAPISite);
         }
 
         @Override
