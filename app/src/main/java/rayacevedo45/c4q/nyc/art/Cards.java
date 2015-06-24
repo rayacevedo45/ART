@@ -163,8 +163,9 @@ public class Cards extends ActionBarActivity {
     public class AsyncTime extends AsyncTask<Void, Void, String> {
         @Override
         public String doInBackground(Void... voids) {
+            String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign;
             JSONParser parser1 = new JSONParser();
-            String dailyHoroscope = parser1.parse("http://widgets.fabulously40.com/horoscope.json?sign=" + userSign);
+            String dailyHoroscope = parser1.parse(horoscopeAPISite);
             return dailyHoroscope;
         }
 
