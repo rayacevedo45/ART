@@ -2,11 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="rayacevedo45.c4q.nyc.art" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
-
-
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="17" />
 
     <application
         android:allowBackup="true"
@@ -16,7 +17,6 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
-
         </activity>
         <activity
             android:name=".Cards"
@@ -30,6 +30,17 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".NotePagerActivity"
+            android:label="@string/title_activity_note" >
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".NoteListActivity" />
+        </activity>
+        <activity
+            android:name=".NoteListActivity"
+            android:label="@string/title_activity_note_list" >
+
         </activity>
     </application>
 

@@ -1,9 +1,11 @@
 package rayacevedo45.c4q.nyc.art;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
@@ -12,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -52,13 +55,23 @@ public class Cards extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cards);
+
+
         parser = new JSONParser();
         AsyncTime getDailyHoroscope = new AsyncTime();
         getDailyHoroscope.execute();
         initializeViewsAndValues();
 
-
-
+        //can set conditions that this loads the screen for
+        // creating a new note or it shows the list depending on current content.
+        Button NoteTest = (Button) findViewById(R.id.openNoteButton);
+        NoteTest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Cards.this, NoteListActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
@@ -71,7 +84,7 @@ public class Cards extends ActionBarActivity {
         top = (LinearLayout) findViewById(R.id.calenederLL);
         imageView = (ImageView) findViewById(R.id.weatherIV);
         todotv = (TextView) findViewById(R.id.ToDoList);
-        cv = (CalendarView) findViewById(R.id.cv);
+        //cv = (CalendarView) findViewById(R.id.cv);
 
 
         SharedPreferences settings = Cards.this.getSharedPreferences("PREFS_NAME", 0);
@@ -85,7 +98,7 @@ public class Cards extends ActionBarActivity {
 
         welcome.setText("Hello, " + name);
 
-        findUserSign();
+        userSign = findUserSign();
 
         horoscopeCV.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
             @Override
@@ -111,30 +124,7 @@ public class Cards extends ActionBarActivity {
     }
 
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_cards, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    public void findUserSign() {
+    public String findUserSign() {
         String month = birthdayS.toString().substring(0, 2);
         //Log.d("{{{",month);
 
@@ -192,6 +182,7 @@ public class Cards extends ActionBarActivity {
         } else {
             userSign = "capricorn";
         }
+        return userSign;
     }
 
 
