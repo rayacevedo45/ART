@@ -3,6 +3,7 @@ package rayacevedo45.c4q.nyc.art;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,11 +17,15 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 
 public class Cards extends ActionBarActivity {
-    TextView welcome,horoscopeTV;
-    private String name,birthdayS,zipcodeS,userSign;
+    TextView welcome,horoscopeTV, date, time, amPm, location, temperature;
+    private String name,birthdayS,zipcodeS,userSign, dateStr, amPmStr, locationStr, temperatureStr, seconds;
+    Calendar rightNow;
 
     public static final String[] CARDS = {"To-Do List", "Horoscope", "Weather", "Stocks"};
     @Override
@@ -39,6 +44,76 @@ public class Cards extends ActionBarActivity {
         welcome.setText("Hello, " + name);
 
         horoscopeTV = (TextView) findViewById(R.id.horoscopeTVID);
+        date = (TextView) findViewById(R.id.date);
+        time = (TextView) findViewById(R.id.time);
+        amPm = (TextView) findViewById(R.id.am_pm);
+        location = (TextView) findViewById(R.id.location);
+        temperature = (TextView) findViewById(R.id.temperature);
+
+        //get day of week and display in textView
+        rightNow = Calendar.getInstance();
+        int dayofweek = rightNow.get(Calendar.DAY_OF_WEEK);
+
+        if (dayofweek == 1) {
+            date.setText("Sun, ");
+        }
+        else if (dayofweek == 2) {
+            date.setText("Mon, ");
+        }
+        else if (dayofweek == 3) {
+            date.setText("Tues, ");
+        }
+        else if (dayofweek == 4) {
+            date.setText("Wed, ");
+        }
+        else if (dayofweek == 5) {
+            date.setText("Thurs, ");
+        }
+        else if (dayofweek == 6) {
+            date.setText("Fri, ");
+        }
+        else {
+            date.setText("Sat, ");
+        }
+
+        //get date and display to TextView
+        int month = rightNow.get(Calendar.MONTH);
+        if (month == 0) {
+            dateStr = "January ";
+        }
+        else if (month == 1) {
+            dateStr = "February ";
+        }
+        else if (month == 2) {
+            dateStr = "March ";
+        }
+        else if (month == 3) {
+            dateStr = "April ";
+        }
+        else if (month == 4) {
+            dateStr = "May ";
+        }
+        else if (month == 5) {
+            dateStr = "June ";
+        }
+        else if (month == 6) {
+            dateStr = "July ";
+        }
+        else if (month == 7) {
+            dateStr = "August ";
+        }
+        else if (month == 8) {
+            dateStr = "September ";
+        }
+        else if (month == 9) {
+            dateStr = "October ";
+        }
+        else if (month == 10) {
+            dateStr = "November ";
+        }
+        else {
+            dateStr = "December ";
+        }
 
 
 
