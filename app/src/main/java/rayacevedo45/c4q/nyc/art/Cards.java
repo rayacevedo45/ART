@@ -1,11 +1,20 @@
 package rayacevedo45.c4q.nyc.art;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.CalendarView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.json.JSONObject;
@@ -19,33 +28,91 @@ import java.net.URL;
 
 
 public class Cards extends ActionBarActivity {
-    TextView welcome,horoscopeTV;
-    private String name,birthdayS,zipcodeS,userSign;
+
+
+    TextView welcome, horoscopeTV,todotv;
+    private String name;
+    private String birthdayS;
+    private String zipcodeS;
+    private String userSign;
+    CardView horoscopeCV;
+    LinearLayout top;
+    ImageView imageView;
+    CalendarView cv;
+
+//    public static final String MyPREFERENCES = "MyPrefs" ;
+//    SharedPreferences sharedpreferences;
+
 
     public static final String[] CARDS = {"To-Do List", "Horoscope", "Weather", "Stocks"};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cards);
 
-        //ExpandableListView listView = (ExpandableListView) findViewById(R.id.listview);
-
-        Bundle extras = getIntent().getExtras();
-        name = extras.getString("name");
-        birthdayS = extras.getString("birthday");
-        zipcodeS = extras.getString("zipcode");
-
         welcome = (TextView) findViewById(R.id.welcomeTV);
-        welcome.setText("Hello, " + name);
-
+        horoscopeCV = (CardView) findViewById(R.id.card_view2);
         horoscopeTV = (TextView) findViewById(R.id.horoscopeTVID);
+        top = (LinearLayout) findViewById(R.id.calenederLL);
+        imageView = (ImageView) findViewById(R.id.weatherIV);
+        todotv = (TextView) findViewById(R.id.ToDoList);
+        cv = (CalendarView) findViewById(R.id.cv);
+
+//        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sharedpreferences.edit();
+//        editor.putString("name", name);
+//        editor.putString("bday", birthdayS);
+//        editor.putString("zipcode", zipcodeS);
+//        editor.commit();
+
+//        Bundle extras = getIntent().getExtras();
+//        String check = extras.getString("check");
+
+//        if (check.equals("newUser")) {
+//            name = extras.getString("name");
+//            birthdayS = extras.getString("birthday");
+//            zipcodeS = extras.getString("zipcode");
+//        }
+//        else{
+//            name = savedInstanceState.getString("name");
+//            birthdayS = getSharedPreferences()
+//        birthdayS = savedInstanceState.getString("bday");
+//        Log.d("{{{",birthdayS);
+//            zipcodeS = getSharedPreferences("zipcode", 0).toString();
+//        }
+        SharedPreferences settings = Cards.this.getSharedPreferences("PREFS_NAME", 0);
+        settings = Cards.this.getSharedPreferences("PREFS_NAME", 0);
+        name = settings.getString("name", "");
+        birthdayS = settings.getString("bday", "");
+        zipcodeS = settings.getString("zipcode", "");
 
 
+        welcome.setText("Hello, " + name);
 
         findUserSign();
 
         AsyncTime getDialyHoroscope = new AsyncTime();
         getDialyHoroscope.execute();
+
+        horoscopeCV.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
+            @Override
+            public void onSwipeLeft() {
+                horoscopeCV.setVisibility(View.GONE);
+            }
+        });
+        top.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
+            @Override
+            public void onSwipeLeft() {
+                top.setVisibility(View.GONE);
+            }
+        });
+        imageView.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
+            @Override
+            public void onSwipeLeft() {
+                imageView.setVisibility(View.GONE);
+            }
+        });
 
 
     }
@@ -69,87 +136,68 @@ public class Cards extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
-    public void findUserSign(){
-        String month = birthdayS.substring(0, 2);
+
+    public void findUserSign() {
+        String month = birthdayS.toString().substring(0,2);
+        //Log.d("{{{",month);
+
         Log.d("month", month);
-        String day = birthdayS.substring(3, 5);
+        String day = birthdayS.toString().substring(3, 5);
         Log.d("day", day);
         int monthInt = Integer.parseInt(month);
         int bdayInt = Integer.parseInt(day);
 
         if (monthInt == 1 && bdayInt >= 21) {
             userSign = "aquarius";
-        }
-        else if (monthInt == 2 && bdayInt <= 19) {
+        } else if (monthInt == 2 && bdayInt <= 19) {
             userSign = "aquarius";
-        }
-        else if (monthInt == 2 && bdayInt >= 21) {
+        } else if (monthInt == 2 && bdayInt >= 21) {
             userSign = "pisces";
-        }
-        else if (monthInt == 3 && bdayInt <= 19) {
+        } else if (monthInt == 3 && bdayInt <= 19) {
             userSign = "pisces";
-        }
-        else if (monthInt == 3 && bdayInt >= 21) {
+        } else if (monthInt == 3 && bdayInt >= 21) {
             userSign = "aries";
-        }
-        else if (monthInt == 4 && bdayInt <= 19) {
+        } else if (monthInt == 4 && bdayInt <= 19) {
             userSign = "aries";
-        }
-        else if (monthInt == 4 && bdayInt >= 20) {
+        } else if (monthInt == 4 && bdayInt >= 20) {
             userSign = "taurus";
-        }
-        else if (monthInt == 5 && bdayInt <= 20) {
+        } else if (monthInt == 5 && bdayInt <= 20) {
             userSign = "taurus";
-        }
-        else if (monthInt == 5 && bdayInt >= 21) {
+        } else if (monthInt == 5 && bdayInt >= 21) {
             userSign = "gemini";
-        }
-        else if (monthInt == 6 && bdayInt <= 21) {
+        } else if (monthInt == 6 && bdayInt <= 21) {
             userSign = "gemini";
-        }
-        else if (monthInt == 6 && bdayInt >= 22) {
+        } else if (monthInt == 6 && bdayInt >= 22) {
             userSign = "cancer";
-        }
-        else if (monthInt == 7 && bdayInt <= 22) {
+        } else if (monthInt == 7 && bdayInt <= 22) {
             userSign = "cancer";
-        }
-        else if (monthInt == 7 && bdayInt >= 23) {
+        } else if (monthInt == 7 && bdayInt >= 23) {
             userSign = "leo";
-        }
-        else if (monthInt == 8 && bdayInt <= 22) {
+        } else if (monthInt == 8 && bdayInt <= 22) {
             userSign = "leo";
-        }
-        else if (monthInt == 8 && bdayInt >= 23) {
+        } else if (monthInt == 8 && bdayInt >= 23) {
             userSign = "virgo";
-        }
-        else if (monthInt == 9 && bdayInt <= 22) {
+        } else if (monthInt == 9 && bdayInt <= 22) {
             userSign = "virgo";
-        }
-        else if (monthInt == 9 && bdayInt >= 23) {
+        } else if (monthInt == 9 && bdayInt >= 23) {
             userSign = "libra";
-        }
-        else if (monthInt == 10 && bdayInt <= 22) {
+        } else if (monthInt == 10 && bdayInt <= 22) {
             userSign = "libra";
-        }
-        else if (monthInt == 10 && bdayInt >= 23) {
+        } else if (monthInt == 10 && bdayInt >= 23) {
             userSign = "scorpio";
-        }
-        else if (monthInt == 11 && bdayInt <= 21) {
+        } else if (monthInt == 11 && bdayInt <= 21) {
             userSign = "scorpio";
-        }
-        else if (monthInt == 11 && bdayInt >= 22){
+        } else if (monthInt == 11 && bdayInt >= 22) {
             userSign = "sagittarius";
-        }
-        else if (monthInt == 12 && bdayInt <= 19){
+        } else if (monthInt == 12 && bdayInt <= 19) {
             userSign = "sagittarius";
-        }
-        else {
+        } else {
             userSign = "capricorn";
         }
     }
+
     public class AsyncTime extends AsyncTask<Void, Void, String> {
         @Override
         public String doInBackground(Void... voids) {
@@ -169,7 +217,7 @@ public class Cards extends ActionBarActivity {
 
                 JSONObject dailyHoroscopeObject = horoscope.getJSONObject("horoscope");
                 String dailyHoroscope = dailyHoroscopeObject.getString("horoscope");
-                Log.d("^^^",dailyHoroscope);
+                Log.d("^^^", dailyHoroscope);
 
 
                 return dailyHoroscope;
@@ -181,8 +229,7 @@ public class Cards extends ActionBarActivity {
 
         @Override
         public void onPostExecute(String s) {
-            horoscopeTV.setText(s);
-            
+            horoscopeTV.setText(userSign +" daily horoscope \n" + s);
 
         }
 
@@ -197,6 +244,48 @@ public class Cards extends ActionBarActivity {
             return writer.toString();
         }
     }
-}
+    public class OnSwipeTouchListener implements View.OnTouchListener {
 
+        private final GestureDetector gestureDetector;
+
+        public OnSwipeTouchListener(Context context) {
+            gestureDetector = new GestureDetector(context, new GestureListener());
+        }
+
+        public void onSwipeLeft() {
+        }
+
+        public void onSwipeRight() {
+        }
+
+        public boolean onTouch(View v, MotionEvent event) {
+            return gestureDetector.onTouchEvent(event);
+        }
+
+        private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+            private static final int SWIPE_DISTANCE_THRESHOLD = 100;
+            private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                float distanceX = e2.getX() - e1.getX();
+                float distanceY = e2.getY() - e1.getY();
+                if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (distanceX > 0)
+                        onSwipeRight();
+                    else
+                        onSwipeLeft();
+                    return true;
+                }
+                return false;
+            }
+        }
+    }
+}
 
