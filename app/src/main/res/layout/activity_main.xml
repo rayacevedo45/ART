@@ -6,6 +6,12 @@
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/signInId">
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,33 +35,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Birthday (mm-dd)"
-        android:id="@+id/birthdayET"/>
+        android:id="@+id/birthdayET"
+        android:phoneNumber="true"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Zip Code"
-        android:id="@+id/zipcodeET"/>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Company you like"/>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-
-    
-    <!--<ImageView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:src="@drawable/applelogo"-->
-        <!--/>-->
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:id="@+id/zipcodeET"
+        android:phoneNumber="true"/>
 
         <Button
             android:layout_width="match_parent"
@@ -63,11 +50,11 @@
             android:text="Next"
             android:layout_gravity="center"
             android:gravity="center|bottom"
+            android:layout_marginTop="150dp"
             android:onClick="next"/>
-
-        </LinearLayout>
 
 
 
 
 </LinearLayout>
+    </LinearLayout>
