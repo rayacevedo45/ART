@@ -16,7 +16,7 @@ import java.net.URL;
  */
 public class JSONParser {
 
-    public String parse(String webPage) {
+    public JSONObject parse(String webPage) {
 
         try {
             Log.d("$$$", webPage);
@@ -28,14 +28,8 @@ public class JSONParser {
 
             String Json = readStream(connection.getInputStream());
             Log.d("|||", Json);
-            JSONObject horoscope = new JSONObject(Json);
-
-            JSONObject dailyHoroscopeObject = horoscope.getJSONObject("horoscope");
-            String dailyHoroscope = dailyHoroscopeObject.getString("horoscope");
-            Log.d("^^^",dailyHoroscope);
-
-
-            return dailyHoroscope;
+            JSONObject jsonObject = new JSONObject(Json);
+            return jsonObject;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
