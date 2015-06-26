@@ -16,12 +16,16 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class Cards extends ActionBarActivity {
     TextView welcome,horoscopeTV;
     private String name,birthdayS,zipcodeS,userSign;
     private JSONParser parser;
+    private JSONObject dailyHoroscopeObject;
+    private String dailyHoroscopeString;
 
     public static final String[] CARDS = {"To-Do List", "Horoscope", "Weather", "Stocks"};
     @Override
@@ -37,12 +41,13 @@ public class Cards extends ActionBarActivity {
     }
 
     public void initializeViewsAndValues(){
-
+         parser = new JSONParser();
          Bundle extras = getIntent().getExtras();
+
          boolean firstRun = (extras.isEmpty() );
 
 
-        if (firstRun) {
+        if (!firstRun) {
             name = extras.getString("name");
             birthdayS = extras.getString("birthday");
             zipcodeS = extras.getString("zipcode");
@@ -82,96 +87,101 @@ public class Cards extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
     public String findUserSign(){
-        String month = birthdayS.substring(0, 2);
-        Log.d("month", month);
-        String day = birthdayS.substring(3, 5);
-        Log.d("day", day);
-        int monthInt = Integer.parseInt(month);
-        int bdayInt = Integer.parseInt(day);
+        boolean dateValid = ! birthdayS.isEmpty();
 
-        if (monthInt == 1 && bdayInt >= 21) {
-            userSign = "aquarius";
-        }
-        else if (monthInt == 2 && bdayInt <= 19) {
-            userSign = "aquarius";
-        }
-        else if (monthInt == 2 && bdayInt >= 21) {
-            userSign = "pisces";
-        }
-        else if (monthInt == 3 && bdayInt <= 19) {
-            userSign = "pisces";
-        }
-        else if (monthInt == 3 && bdayInt >= 21) {
-            userSign = "aries";
-        }
-        else if (monthInt == 4 && bdayInt <= 19) {
-            userSign = "aries";
-        }
-        else if (monthInt == 4 && bdayInt >= 20) {
-            userSign = "taurus";
-        }
-        else if (monthInt == 5 && bdayInt <= 20) {
-            userSign = "taurus";
-        }
-        else if (monthInt == 5 && bdayInt >= 21) {
-            userSign = "gemini";
-        }
-        else if (monthInt == 6 && bdayInt <= 21) {
-            userSign = "gemini";
-        }
-        else if (monthInt == 6 && bdayInt >= 22) {
-            userSign = "cancer";
-        }
-        else if (monthInt == 7 && bdayInt <= 22) {
-            userSign = "cancer";
-        }
-        else if (monthInt == 7 && bdayInt >= 23) {
-            userSign = "leo";
-        }
-        else if (monthInt == 8 && bdayInt <= 22) {
-            userSign = "leo";
-        }
-        else if (monthInt == 8 && bdayInt >= 23) {
-            userSign = "virgo";
-        }
-        else if (monthInt == 9 && bdayInt <= 22) {
-            userSign = "virgo";
-        }
-        else if (monthInt == 9 && bdayInt >= 23) {
-            userSign = "libra";
-        }
-        else if (monthInt == 10 && bdayInt <= 22) {
-            userSign = "libra";
-        }
-        else if (monthInt == 10 && bdayInt >= 23) {
-            userSign = "scorpio";
-        }
-        else if (monthInt == 11 && bdayInt <= 21) {
-            userSign = "scorpio";
-        }
-        else if (monthInt == 11 && bdayInt >= 22){
-            userSign = "sagittarius";
-        }
-        else if (monthInt == 12 && bdayInt <= 19){
-            userSign = "sagittarius";
-        }
-        else {
+        if (dateValid) {
+            String month = birthdayS.substring(0, 2);
+            Log.d("month", month);
+            String day = birthdayS.substring(3, 5);
+            Log.d("day", day);
+            int monthInt = Integer.parseInt(month);
+            int bdayInt = Integer.parseInt(day);
+
+
+            if (monthInt == 1 && bdayInt >= 21) {
+                userSign = "aquarius";
+            } else if (monthInt == 2 && bdayInt <= 19) {
+                userSign = "aquarius";
+            } else if (monthInt == 2 && bdayInt >= 21) {
+                userSign = "pisces";
+            } else if (monthInt == 3 && bdayInt <= 19) {
+                userSign = "pisces";
+            } else if (monthInt == 3 && bdayInt >= 21) {
+                userSign = "aries";
+            } else if (monthInt == 4 && bdayInt <= 19) {
+                userSign = "aries";
+            } else if (monthInt == 4 && bdayInt >= 20) {
+                userSign = "taurus";
+            } else if (monthInt == 5 && bdayInt <= 20) {
+                userSign = "taurus";
+            } else if (monthInt == 5 && bdayInt >= 21) {
+                userSign = "gemini";
+            } else if (monthInt == 6 && bdayInt <= 21) {
+                userSign = "gemini";
+            } else if (monthInt == 6 && bdayInt >= 22) {
+                userSign = "cancer";
+            } else if (monthInt == 7 && bdayInt <= 22) {
+                userSign = "cancer";
+            } else if (monthInt == 7 && bdayInt >= 23) {
+                userSign = "leo";
+            } else if (monthInt == 8 && bdayInt <= 22) {
+                userSign = "leo";
+            } else if (monthInt == 8 && bdayInt >= 23) {
+                userSign = "virgo";
+            } else if (monthInt == 9 && bdayInt <= 22) {
+                userSign = "virgo";
+            } else if (monthInt == 9 && bdayInt >= 23) {
+                userSign = "libra";
+            } else if (monthInt == 10 && bdayInt <= 22) {
+                userSign = "libra";
+            } else if (monthInt == 10 && bdayInt >= 23) {
+                userSign = "scorpio";
+            } else if (monthInt == 11 && bdayInt <= 21) {
+                userSign = "scorpio";
+            } else if (monthInt == 11 && bdayInt >= 22) {
+                userSign = "sagittarius";
+            } else if (monthInt == 12 && bdayInt <= 19) {
+                userSign = "sagittarius";
+            } else {
+                userSign = "capricorn";
+            }
+        } else {
             userSign = "capricorn";
         }
         return userSign;
     }
-    public class AsyncTime extends AsyncTask<Void, Void, String> {
+
+    public class AsyncTime extends AsyncTask<Void, Void, HashMap> {
         @Override
-        public String doInBackground(Void... voids) {
+        public HashMap doInBackground(Void... voids) {
             String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign;
-            return parser.parse(horoscopeAPISite);
+            dailyHoroscopeObject = parser.parse(horoscopeAPISite);
+
+            HashMap JSONresults = new HashMap();
+//            dailyStockObject = parser.parse(stockAPISite);
+//            dailyWeatherObject = parser.parse(weatherAPIObject);
+            try {
+                JSONObject dailyHoroscope = dailyHoroscopeObject.getJSONObject("horoscope");
+                dailyHoroscopeString = dailyHoroscope.getString("horoscope");
+            } catch (Exception e ){
+
+            }
+            JSONresults.put("horoscopeString", dailyHoroscopeString);
+            return JSONresults;
         }
 
         @Override
-        public void onPostExecute(String s) {
-            horoscopeTV.setText(s);
+        public void onPostExecute(HashMap s) {
+
+            horoscopeTV.setText( (String) (s.get("horoscopeString")));
+            setUpStockCard();
+
 
         }
+
+    }
+
+    public void setUpStockCard(){
 
     }
 }
