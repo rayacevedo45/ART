@@ -26,7 +26,9 @@ public class MainActivity2Activity extends ActionBarActivity {
             String name = settings.getString("name", "");
             //button.setVisibility(View.VISIBLE);
             button.setText(name);
-
+            if (button.getText().toString().equals("")){
+                button.setVisibility(View.GONE);
+            }
 
         }
         catch (Exception e){
