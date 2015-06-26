@@ -15,6 +15,7 @@ import android.widget.Toast;
 public class MainActivity extends ActionBarActivity {
     private String name,birthdayS,zipcodeS;
     EditText firstName, birthDay, zipcode;
+    int monthInt, bdayInt;
 
     public static final String MyPREFERENCES = "MyPrefs" ;
     SharedPreferences sharedpreferences;
@@ -53,16 +54,29 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void next (View v){
-        name = firstName.getText().toString();
-        birthdayS = birthDay.getText().toString();
-        zipcodeS = zipcode.getText().toString();
-        String month = birthdayS.substring(0, 2);
-        Log.d("month", month);
-        String day = birthdayS.substring(3, 5);
-        Log.d("day", day);
-        int monthInt = Integer.parseInt(month);
-        int bdayInt = Integer.parseInt(day);
+        if (!(firstName.getText().toString() .equals(""))){
+            name = firstName.getText().toString();
+        } else {
+            name = "";
+        }
+        if (!(birthDay.getText().toString().equals(""))) {
+            birthdayS = birthDay.getText().toString();
+            String month = birthdayS.substring(0, 2);
+            Log.d("month", month);
+            String day = birthdayS.substring(3, 5);
+            Log.d("day", day);
+            monthInt = Integer.parseInt(month);
+            bdayInt = Integer.parseInt(day);
+        } else {
+            monthInt = 0;
+            bdayInt = 0;
 
+        }
+        if (!(zipcode.getText().toString().equals(""))) {
+            zipcodeS = zipcode.getText().toString();
+        } else{
+            zipcodeS = "";
+        }
 
         SharedPreferences settings = MainActivity.this.getSharedPreferences("PREFS_NAME", 0);
         settings = MainActivity.this.getSharedPreferences("PREFS_NAME", 0);
@@ -73,12 +87,22 @@ public class MainActivity extends ActionBarActivity {
         editor.putString("zipcode", zipcodeS);
         editor.commit();
 
-        if (zipcodeS.length() == 5 && monthInt < 13 && bdayInt < 32){
+        boolean zipValid;
+        boolean monthValid;
+        boolean bdayValid;
+        boolean nameValid;
+
+        zipValid = zipcodeS.length() == 5;
+        monthValid = (monthInt > 0) && (monthInt < 13);
+        bdayValid = (bdayInt > 0) && (bdayInt < 32);
+        nameValid = (name.length() > 0);
+
+        if (nameValid && zipValid && monthValid && bdayValid){
         Intent intent = new Intent(MainActivity.this, Cards.class);
-//        intent.putExtra("check","newUser");
-//        intent.putExtra("name",name);
-//        intent.putExtra("birthday", birthDayS);
-//        intent.putExtra("zipcode", zipcodeS);
+        intent.putExtra("check","newUser");
+        intent.putExtra("name",name);
+        intent.putExtra("birthday", birthdayS);
+        intent.putExtra("zipcode", zipcodeS);
         startActivity(intent);
         }
         else {
