@@ -21,33 +21,42 @@ import java.net.URL;
 public class Cards extends ActionBarActivity {
     TextView welcome,horoscopeTV;
     private String name,birthdayS,zipcodeS,userSign;
+    private JSONParser parser;
 
     public static final String[] CARDS = {"To-Do List", "Horoscope", "Weather", "Stocks"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cards);
+        initializeViewsAndValues();
 
-        //ExpandableListView listView = (ExpandableListView) findViewById(R.id.listview);
-
-        Bundle extras = getIntent().getExtras();
-        name = extras.getString("name");
-        birthdayS = extras.getString("birthday");
-        zipcodeS = extras.getString("zipcode");
-
-        welcome = (TextView) findViewById(R.id.welcomeTV);
-        welcome.setText("Hello, " + name);
-
-        horoscopeTV = (TextView) findViewById(R.id.horoscopeTVID);
+        AsyncTime getDailyHoroscope = new AsyncTime();
+        getDailyHoroscope.execute();
 
 
+    }
 
-        findUserSign();
+    public void initializeViewsAndValues(){
 
-        AsyncTime getDialyHoroscope = new AsyncTime();
-        getDialyHoroscope.execute();
+         Bundle extras = getIntent().getExtras();
+         boolean firstRun = (extras.isEmpty() );
 
 
+        if (firstRun) {
+            name = extras.getString("name");
+            birthdayS = extras.getString("birthday");
+            zipcodeS = extras.getString("zipcode");
+            welcome = (TextView) findViewById(R.id.welcomeTV);
+            welcome.setText("Hello, " + name);
+            horoscopeTV = (TextView) findViewById(R.id.horoscopeTVID);
+            userSign = findUserSign();
+            //write all of this to sharedpreferences right after
+        } else {
+            //get from sharedpreferences....etc:
+            //name = sharedpreferences.get
+            //birthday = sharedpreferences.get
+
+        }
     }
 
 
@@ -72,7 +81,7 @@ public class Cards extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    public void findUserSign(){
+    public String findUserSign(){
         String month = birthdayS.substring(0, 2);
         Log.d("month", month);
         String day = birthdayS.substring(3, 5);
@@ -149,53 +158,21 @@ public class Cards extends ActionBarActivity {
         else {
             userSign = "capricorn";
         }
+        return userSign;
     }
     public class AsyncTime extends AsyncTask<Void, Void, String> {
         @Override
         public String doInBackground(Void... voids) {
-
-            try {
-                String webpage = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign;
-                Log.d("$$$", webpage);
-                URL url = new URL(webpage);
-
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.connect();
-
-                String Json = readStream(connection.getInputStream());
-                Log.d("|||", Json);
-                JSONObject horoscope = new JSONObject(Json);
-
-                JSONObject dailyHoroscopeObject = horoscope.getJSONObject("horoscope");
-                String dailyHoroscope = dailyHoroscopeObject.getString("horoscope");
-                Log.d("^^^",dailyHoroscope);
-
-
-                return dailyHoroscope;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
+            String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign;
+            return parser.parse(horoscopeAPISite);
         }
 
         @Override
         public void onPostExecute(String s) {
             horoscopeTV.setText(s);
-            
 
         }
 
-        private String readStream(InputStream in) throws IOException {
-            char[] buffer = new char[1024 * 4];
-            InputStreamReader reader = new InputStreamReader(in, "UTF8");
-            StringWriter writer = new StringWriter();
-            int n;
-            while ((n = reader.read(buffer)) != -1) {
-                writer.write(buffer, 0, n);
-            }
-            return writer.toString();
-        }
     }
 }
 

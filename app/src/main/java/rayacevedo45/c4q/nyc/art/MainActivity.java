@@ -46,6 +46,7 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
     public void next (View v){
         name = firstName.getText().toString();
         birthDayS = birthDay.getText().toString();
