@@ -22,6 +22,7 @@ public class MainActivity2Activity extends ActionBarActivity {
         setContentView(R.layout.activity_main_activity2);
 
 
+
         button = (Button) findViewById(R.id.ru);
 
         try {
