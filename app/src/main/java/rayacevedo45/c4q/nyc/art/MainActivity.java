@@ -30,10 +30,6 @@ public class MainActivity extends ActionBarActivity {
         zipcode = (EditText) findViewById(R.id.zipcodeET);
     }
 
-
-
-
-
     public void next (View v){
         if (!(firstName.getText().toString() .equals(""))){
             name = firstName.getText().toString();

@@ -29,6 +29,7 @@ public class NoteListActivity extends ActionBarActivity {
     private boolean mSubtitleVisible;
     private static final String TAG = "NoteListFragment";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,35 +76,29 @@ public class NoteListActivity extends ActionBarActivity {
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 
-                    if (item.getItemId() == R.id.menu_item_delete_note) {
+                if (item.getItemId() == R.id.menu_item_delete_note) {
 
-                        NotePad notePad = NotePad.get(getApplicationContext());
-                        for (int i = customadapter.getCount() - 1; i >= 0; i--) {
-                            if (listView.isItemChecked(i)) {
-                                notePad.deleteNote(customadapter.getItem(i));
-                            }
+                    NotePad notePad = NotePad.get(getApplicationContext());
+                    for (int i = customadapter.getCount() - 1; i >= 0; i--) {
+                        if (listView.isItemChecked(i)) {
+                            notePad.deleteNote(customadapter.getItem(i));
                         }
-                        mode.finish();
-                        customadapter.notifyDataSetChanged();
-                        notePad.saveNotes();
-                        return true;
-                    } else {
-                        return false;
                     }
+                    mode.finish();
+                    customadapter.notifyDataSetChanged();
+                    notePad.saveNotes();
+                    return true;
+                } else {
+                    return false;
                 }
+            }
 
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
 
             }
         });
-        }
-
-
-
-
-
-
+    }
 
 
     @Override
@@ -116,7 +111,7 @@ public class NoteListActivity extends ActionBarActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
                                     ContextMenu.ContextMenuInfo menuInfo) {
-      getMenuInflater().inflate(R.menu.menu_note_list, menu);
+        getMenuInflater().inflate(R.menu.menu_note_list, menu);
     }
 
     @Override
@@ -136,7 +131,7 @@ public class NoteListActivity extends ActionBarActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterViewCompat.AdapterContextMenuInfo info = (AdapterViewCompat.AdapterContextMenuInfo)item.getMenuInfo();
+        AdapterViewCompat.AdapterContextMenuInfo info = (AdapterViewCompat.AdapterContextMenuInfo) item.getMenuInfo();
         int position = info.position;
 
         Note note = customadapter.getItem(position);
@@ -150,8 +145,8 @@ public class NoteListActivity extends ActionBarActivity {
                 return true;
         }
 
-    return super.onContextItemSelected(item);
-}
+        return super.onContextItemSelected(item);
+    }
 
 
     public void showCreateNote(View v) {
@@ -169,10 +164,9 @@ public class NoteListActivity extends ActionBarActivity {
         customadapter.notifyDataSetChanged();
     }
 
+    public class NoteAdapter extends ArrayAdapter<Note> {
 
-    private class NoteAdapter extends ArrayAdapter<Note> {
-
-        public int getCount(){
+        public int getCount() {
             return mNotes.size();
         }
 
@@ -182,12 +176,9 @@ public class NoteListActivity extends ActionBarActivity {
         }
 
 
-
-
         public NoteAdapter(ArrayList<Note> notes) {
             super(getApplicationContext(), 0, notes);
         }
-
 
 
         @Override
@@ -199,14 +190,13 @@ public class NoteListActivity extends ActionBarActivity {
             // Configure for this note
             Note c = getItem(position);
 
-            TextView titleTextView = (TextView)convertView.findViewById(R.id.note_list_title);
+            TextView titleTextView = (TextView) convertView.findViewById(R.id.note_list_title);
             if (c != null) {
                 titleTextView.setText(c.getTitle());
             }
 
 
-
-            TextView dateTextView = (TextView)convertView.findViewById(R.id.note_list_item_dateTV);
+            TextView dateTextView = (TextView) convertView.findViewById(R.id.note_list_item_dateTV);
 
             if (c != null) {
                 CharSequence cs = DateFormat.format("EEEE, MMM dd, yyyy", c.getDate());
@@ -214,10 +204,14 @@ public class NoteListActivity extends ActionBarActivity {
             }
 
 
-            CheckBox solvedCheckedBox = (CheckBox)convertView.findViewById(R.id.note_list_item_CheckBox);
+            CheckBox solvedCheckedBox = (CheckBox) convertView.findViewById(R.id.note_list_item_CheckBox);
             solvedCheckedBox.setChecked(c.isSolved());
 
             return convertView;
         }
     }
+
+
+
+
 }

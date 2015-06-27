@@ -11,28 +11,36 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 
 public class Cards extends ActionBarActivity {
 
-    TextView welcome,horoscopeTV, todotv;
+    TextView welcome,horoscopeTV;
     private String name,birthdayS,zipcodeS,userSign;
     private JSONParser parser;
     private JSONObject dailyHoroscopeObject;
     private String dailyHoroscopeString;
     CardView horoscopeCV;
     LinearLayout top;
+    ListView todoList;
     ImageView imageView;
-    CalendarView cv;
+    private ArrayList mNotes;
+    private ArrayAdapter basicAdapter;
+
 
 
 //    public static final String MyPREFERENCES = "MyPrefs" ;
@@ -55,7 +63,7 @@ public class Cards extends ActionBarActivity {
 
         //can set conditions that this loads the screen for
         // creating a new note or it shows the list depending on current content.
-        Button NoteTest = (Button) findViewById(R.id.openNoteButton);
+        ImageButton NoteTest = (ImageButton) findViewById(R.id.openListButton);
         NoteTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,18 +72,50 @@ public class Cards extends ActionBarActivity {
             }
         });
 
+        ImageButton addNewNoteButton = (ImageButton) findViewById(R.id.openNoteButton);
+        addNewNoteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Note note = new Note();
+                note.setTitle("");
+                NotePad.get(getApplicationContext()).addNote(note);
+                Intent i = new Intent(getApplicationContext(), NotePagerActivity.class);
+                i.putExtra(NoteFragment.EXTRA_NOTE_ID, note.getId());
+                startActivityForResult(i, 0);
+            }
+        });
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        basicAdapter.notifyDataSetChanged();
     }
 
 
     public void initializeViewsAndValues(){
-
+        mNotes = NotePad.get(getApplicationContext()).getNotes();
         welcome = (TextView) findViewById(R.id.welcomeTV);
         horoscopeCV = (CardView) findViewById(R.id.card_view2);
         horoscopeTV = (TextView) findViewById(R.id.horoscopeTVID);
         top = (LinearLayout) findViewById(R.id.calenederLL);
         imageView = (ImageView) findViewById(R.id.weatherIV);
-        todotv = (TextView) findViewById(R.id.ToDoList);
-        //cv = (CalendarView) findViewById(R.id.cv);
+        todoList = (ListView) findViewById(R.id.todoListView);
+
+        basicAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, mNotes);
+        todoList.setAdapter(basicAdapter);
+        todoList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(Cards.this, NotePagerActivity.class);
+                Note c = (Note) todoList.getItemAtPosition(position);
+                intent.putExtra(NoteFragment.EXTRA_NOTE_ID, c.getId());
+                startActivity(intent);
+
+            }
+        });
+
 
 
         SharedPreferences settings = Cards.this.getSharedPreferences("PREFS_NAME", 0);
@@ -84,8 +124,7 @@ public class Cards extends ActionBarActivity {
         birthdayS = settings.getString("bday", "");
         zipcodeS = settings.getString("zipcode", "");
 
-
-         Bundle extras = getIntent().getExtras();
+        Bundle extras = getIntent().getExtras();
 
         welcome.setText("Hello, " + name);
 

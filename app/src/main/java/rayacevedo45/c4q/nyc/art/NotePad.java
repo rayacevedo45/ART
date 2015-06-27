@@ -2,13 +2,16 @@ package rayacevedo45.c4q.nyc.art;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
 /**
  * Created by c4q-Abass on 6/26/15.
+ * Singleton NotePad
  */
+
 public class NotePad {
     private static final String TAG = "NotePad";
     private static final String FILENAME = "notes.json";
@@ -30,7 +33,7 @@ public class NotePad {
             Log.e(TAG, "Error loading notes: ", e);
         }
 
-//		CreateCrimes(100);
+		//CreateNotes(14);
     }
 
     public static NotePad get(Context c) {
@@ -60,6 +63,10 @@ public class NotePad {
         mNotes.remove(c);
     }
 
+    public void deleteAllNotes(){
+        mNotes.clear();
+    }
+
     public boolean saveNotes() {
         try {
             mSerializer.saveNotes(mNotes);
@@ -71,11 +78,11 @@ public class NotePad {
         }
     }
 
-    private void CreateNotes(int count) {
+    private void CreateNotes(int count) {  //just for quick testing
         for (int i=0; i < 100; i++) {
             Note c = new Note();
             c.setTitle("Note #" + i);
-            c.setSolved(i %2 == 0); // Alternate
+            c.setSolved(i %2 == 0); // Alternate ones are checked.
             mNotes.add(c);
         }
     }

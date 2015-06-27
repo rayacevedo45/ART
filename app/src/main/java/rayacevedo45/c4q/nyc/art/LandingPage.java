@@ -1,5 +1,6 @@
 package rayacevedo45.c4q.nyc.art;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -39,8 +40,9 @@ public class LandingPage extends ActionBarActivity {
     }
 
     public void newUser (View view){
+        NotePad x = NotePad.get(LandingPage.this);
+        x.deleteAllNotes();
         Intent intent = new Intent(LandingPage.this, MainActivity.class);
-
         startActivity(intent);
     }
     public void returningUser (View view){

@@ -16,7 +16,7 @@
     <string name="note_details_label">Details</string>
     <string name="note_solved_label">Completed?</string>
     <string name="notes_title">Notes</string>
-    <string name="date_picker_title">Date of crime:</string>
+    <string name="date_picker_title">Date:</string>
     <string name="new_note">New Note</string>
     <string name="show_subtitle">Show Subtitle</string>
     <string name="hide_subtitle">Hide Subtitle</string>
