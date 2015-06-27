@@ -1,6 +1,7 @@
 package rayacevedo45.c4q.nyc.art;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -8,38 +9,39 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
 public class Cards extends ActionBarActivity {
 
-    TextView welcome,horoscopeTV, todotv;
+    TextView welcome,horoscopeTV;
     private String name,birthdayS,zipcodeS,userSign;
     private JSONParser parser;
     private JSONObject dailyHoroscopeObject;
     private String dailyHoroscopeString;
     CardView horoscopeCV;
     LinearLayout top;
+    ListView todoList;
     ImageView imageView;
-    CalendarView cv;
+    private ArrayList mNotes;
+    private ArrayAdapter basicAdapter;
+
+
 
 //    public static final String MyPREFERENCES = "MyPrefs" ;
 //    SharedPreferences sharedpreferences;
@@ -52,26 +54,68 @@ public class Cards extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cards);
+
+
         parser = new JSONParser();
         AsyncTime getDailyHoroscope = new AsyncTime();
         getDailyHoroscope.execute();
         initializeViewsAndValues();
 
+        //can set conditions that this loads the screen for
+        // creating a new note or it shows the list depending on current content.
+        ImageButton NoteTest = (ImageButton) findViewById(R.id.openListButton);
+        NoteTest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Cards.this, NoteListActivity.class);
+                startActivity(intent);
+            }
+        });
 
+        ImageButton addNewNoteButton = (ImageButton) findViewById(R.id.openNoteButton);
+        addNewNoteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Note note = new Note();
+                note.setTitle("");
+                NotePad.get(getApplicationContext()).addNote(note);
+                Intent i = new Intent(getApplicationContext(), NotePagerActivity.class);
+                i.putExtra(NoteFragment.EXTRA_NOTE_ID, note.getId());
+                startActivityForResult(i, 0);
+            }
+        });
 
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        basicAdapter.notifyDataSetChanged();
     }
 
 
     public void initializeViewsAndValues(){
-
+        mNotes = NotePad.get(getApplicationContext()).getNotes();
         welcome = (TextView) findViewById(R.id.welcomeTV);
         horoscopeCV = (CardView) findViewById(R.id.card_view2);
         horoscopeTV = (TextView) findViewById(R.id.horoscopeTVID);
         top = (LinearLayout) findViewById(R.id.calenederLL);
         imageView = (ImageView) findViewById(R.id.weatherIV);
-        todotv = (TextView) findViewById(R.id.ToDoList);
-        cv = (CalendarView) findViewById(R.id.cv);
+        todoList = (ListView) findViewById(R.id.todoListView);
+
+        basicAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, mNotes);
+        todoList.setAdapter(basicAdapter);
+        todoList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(Cards.this, NotePagerActivity.class);
+                Note c = (Note) todoList.getItemAtPosition(position);
+                intent.putExtra(NoteFragment.EXTRA_NOTE_ID, c.getId());
+                startActivity(intent);
+
+            }
+        });
+
 
 
         SharedPreferences settings = Cards.this.getSharedPreferences("PREFS_NAME", 0);
@@ -80,12 +124,11 @@ public class Cards extends ActionBarActivity {
         birthdayS = settings.getString("bday", "");
         zipcodeS = settings.getString("zipcode", "");
 
-
-         Bundle extras = getIntent().getExtras();
+        Bundle extras = getIntent().getExtras();
 
         welcome.setText("Hello, " + name);
 
-        findUserSign();
+        userSign = findUserSign();
 
         horoscopeCV.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
             @Override
@@ -111,30 +154,7 @@ public class Cards extends ActionBarActivity {
     }
 
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_cards, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    public void findUserSign() {
+    public String findUserSign() {
         String month = birthdayS.toString().substring(0, 2);
         //Log.d("{{{",month);
 
@@ -192,6 +212,7 @@ public class Cards extends ActionBarActivity {
         } else {
             userSign = "capricorn";
         }
+        return userSign;
     }
 
 

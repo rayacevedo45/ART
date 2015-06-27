@@ -29,21 +29,43 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:orientation="vertical"
+                android:background="@android:color/holo_blue_light"
                 android:id="@+id/calenederLL">
-            <TextView
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TO-DO LIST" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="29dp"
+                    android:id="@+id/openNoteButton"
+                    android:src="@drawable/ic_action_add" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="29dp"
+                        android:id="@+id/openListButton"
+                        android:src="@drawable/ic_action_document" />
+
+            </LinearLayout>
+
+                <ListView
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:hint="To-Do List"
-                android:id="@+id/ToDoList"
+                android:id="@+id/todoListView"
                 android:background="@android:color/holo_blue_light"
                 android:layout_weight="1"/>
 
-            <CalendarView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:id="@+id/cv"/>
+
+
 
             </LinearLayout>
 
