@@ -26,29 +26,27 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
-
-public class Cards extends ActionBarActivity {
-    TextView welcome,horoscopeTV, date, time, amPm, location, temperature;
-    private String name,birthdayS,zipcodeS,userSign, dateStr, amPmStr, locationStr, temperatureStr, seconds;
-    Calendar rightNow;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 
 public class Cards extends ActionBarActivity {
 
-    TextView welcome,horoscopeTV, todotv;
-    private String name,birthdayS,zipcodeS,userSign;
+    TextView welcome,horoscopeTV, todotv, date,time, location, temp, amPm, day1, day2, day3, day4, day5, day6, date1, date2, date3, date4, date5, date6;
+    private String weatherAPI, sevenDayForecast, name,birthdayS,zipcodeS,userSign, dateStr, city, tempStr, amPmStr;
     private JSONParser parser;
-    private JSONObject dailyHoroscopeObject;
+    private JSONObject dailyHoroscopeObject, weatherAPIObject, sevenDayForecastObject;
     private String dailyHoroscopeString;
-    CardView horoscopeCV;
+    private double currentTemp;
+    boolean military, celsius;
+    CardView horoscopeCV, weatherCard;
     LinearLayout top;
-    ImageView imageView;
     CalendarView cv;
+    Calendar rightNow;
+    View weather_layout, sevenDayView;
+    ArrayList <String> daysofWeek;
+    ArrayList<TextView> daysofWeekTextViews;
 
 //    public static final String MyPREFERENCES = "MyPrefs" ;
 //    SharedPreferences sharedpreferences;
@@ -61,14 +59,29 @@ public class Cards extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cards);
+        initializeViewsAndValues();
+
+        //when weather card is click, show seven day view with elongated background
+        weatherCard = (CardView) findViewById(R.id.weather_card);
+        weather_layout = findViewById(R.id.main_view);
+        sevenDayView = findViewById(R.id.sevenday_view);
+        weatherCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (sevenDayView.getVisibility() == View.VISIBLE) {
+                    sevenDayView.setVisibility(View.GONE);
+                    weather_layout.setBackgroundResource(R.drawable.aurora_short);
+                }
+                else {
+                    sevenDayView.setVisibility(View.VISIBLE);
+                    weather_layout.setBackgroundResource(R.drawable.aurora_full);
+                }
+            }
+        });
+
         parser = new JSONParser();
         AsyncTime getDailyHoroscope = new AsyncTime();
         getDailyHoroscope.execute();
-        initializeViewsAndValues();
-
-
-
-
     }
 
 
@@ -77,80 +90,27 @@ public class Cards extends ActionBarActivity {
         welcome = (TextView) findViewById(R.id.welcomeTV);
         horoscopeCV = (CardView) findViewById(R.id.card_view2);
         horoscopeTV = (TextView) findViewById(R.id.horoscopeTVID);
-        date = (TextView) findViewById(R.id.date);
-        time = (TextView) findViewById(R.id.time);
-        amPm = (TextView) findViewById(R.id.am_pm);
-        location = (TextView) findViewById(R.id.location);
-        temperature = (TextView) findViewById(R.id.temperature);
-
-        //get day of week and display in textView
-        rightNow = Calendar.getInstance();
-        int dayofweek = rightNow.get(Calendar.DAY_OF_WEEK);
-
-        if (dayofweek == 1) {
-            date.setText("Sun, ");
-        }
-        else if (dayofweek == 2) {
-            date.setText("Mon, ");
-        }
-        else if (dayofweek == 3) {
-            date.setText("Tues, ");
-        }
-        else if (dayofweek == 4) {
-            date.setText("Wed, ");
-        }
-        else if (dayofweek == 5) {
-            date.setText("Thurs, ");
-        }
-        else if (dayofweek == 6) {
-            date.setText("Fri, ");
-        }
-        else {
-            date.setText("Sat, ");
-        }
-
-        //get date and display to TextView
-        int month = rightNow.get(Calendar.MONTH);
-        if (month == 0) {
-            dateStr = "January ";
-        }
-        else if (month == 1) {
-            dateStr = "February ";
-        }
-        else if (month == 2) {
-            dateStr = "March ";
-        }
-        else if (month == 3) {
-            dateStr = "April ";
-        }
-        else if (month == 4) {
-            dateStr = "May ";
-        }
-        else if (month == 5) {
-            dateStr = "June ";
-        }
-        else if (month == 6) {
-            dateStr = "July ";
-        }
-        else if (month == 7) {
-            dateStr = "August ";
-        }
-        else if (month == 8) {
-            dateStr = "September ";
-        }
-        else if (month == 9) {
-            dateStr = "October ";
-        }
-        else if (month == 10) {
-            dateStr = "November ";
-        }
-        else {
-            dateStr = "December ";
-        }
         top = (LinearLayout) findViewById(R.id.calenederLL);
-        imageView = (ImageView) findViewById(R.id.weatherIV);
         todotv = (TextView) findViewById(R.id.ToDoList);
         cv = (CalendarView) findViewById(R.id.cv);
+        date = (TextView) findViewById(R.id.date);
+        time = (TextView) findViewById(R.id.time);
+        location = (TextView) findViewById(R.id.location);
+        temp = (TextView) findViewById(R.id.temperature);
+        amPm = (TextView) findViewById(R.id.am_pm);
+        weatherCard = (CardView) findViewById(R.id.weather_card);
+        day1 = (TextView) findViewById(R.id.dayOne);
+        day2 = (TextView) findViewById(R.id.dayTwo);
+        day3 = (TextView) findViewById(R.id.dayThree);
+        day4 = (TextView) findViewById(R.id.dayFour);
+        day5 = (TextView) findViewById(R.id.dayFive);
+        day6 = (TextView) findViewById(R.id.daySix);
+        date1 = (TextView) findViewById(R.id.dateOne);
+        date2 = (TextView) findViewById(R.id.dateTwo);
+        date3 = (TextView) findViewById(R.id.dateThree);
+        date4 = (TextView) findViewById(R.id.dateFour);
+        date5 = (TextView) findViewById(R.id.dateFive);
+        date6 = (TextView) findViewById(R.id.dateSix);
 
 
         SharedPreferences settings = Cards.this.getSharedPreferences("PREFS_NAME", 0);
@@ -160,11 +120,12 @@ public class Cards extends ActionBarActivity {
         zipcodeS = settings.getString("zipcode", "");
 
 
-         Bundle extras = getIntent().getExtras();
+        Bundle extras = getIntent().getExtras();
 
         welcome.setText("Hello, " + name);
 
         findUserSign();
+        intializeDateTime();
 
         horoscopeCV.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
             @Override
@@ -178,18 +139,18 @@ public class Cards extends ActionBarActivity {
                 top.setVisibility(View.GONE);
             }
         });
-        imageView.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
-            @Override
-            public void onSwipeLeft() {
-                imageView.setVisibility(View.GONE);
-            }
-        });
-
-
+//        imageView.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
+//            @Override
+//            public void onSwipeLeft() {
+//                imageView.setVisibility(View.GONE);
+//            }
+//        });
 
     }
 
+    public void SetSevenDayInfo () {
 
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -214,11 +175,10 @@ public class Cards extends ActionBarActivity {
 
 
     public void findUserSign() {
-        String month = birthdayS.toString().substring(0, 2);
+        String month = birthdayS.substring(0, 2);
         //Log.d("{{{",month);
-
         Log.d("month", month);
-        String day = birthdayS.toString().substring(3, 5);
+        String day = birthdayS.substring(3, 5);
         Log.d("day", day);
         int monthInt = Integer.parseInt(month);
         int bdayInt = Integer.parseInt(day);
@@ -273,43 +233,165 @@ public class Cards extends ActionBarActivity {
         }
     }
 
+    public void intializeDateTime() {
+
+        //get day of week and display in main day of week Textview
+        rightNow = Calendar.getInstance();
+        int dayofweek = rightNow.get(Calendar.DAY_OF_WEEK);
+
+        //set up arraylists
+        daysofWeek = new ArrayList<String>();
+        daysofWeekTextViews = new ArrayList<TextView>();
+        daysofWeek.add("Sun");
+        daysofWeek.add("Mon");
+        daysofWeek.add("Tues");
+        daysofWeek.add("Wed");
+        daysofWeek.add("Thu");
+        daysofWeek.add("Fri");
+        daysofWeek.add("Sat");
+
+        if (dayofweek == 1) {
+            dateStr = daysofWeek.get(0) + ", ";
+        } else if (dayofweek == 2) {
+            dateStr = daysofWeek.get(1) + ", ";
+        } else if (dayofweek == 3) {
+            dateStr = daysofWeek.get(2) + ", ";
+        } else if (dayofweek == 4) {
+            dateStr = daysofWeek.get(3) + ", ";
+        } else if (dayofweek == 5) {
+            dateStr = daysofWeek.get(4) + ", ";
+        } else if (dayofweek == 6) {
+            dateStr = daysofWeek.get(5) + ", ";
+        } else {
+            dateStr = daysofWeek.get(6) + ", ";
+        }
+
+        //get date and display in main date textView
+        int month = rightNow.get(Calendar.MONTH);
+        if (month == 0) {
+            dateStr += "January ";
+        } else if (month == 1) {
+            dateStr += "February ";
+        } else if (month == 2) {
+            dateStr += "March ";
+        } else if (month == 3) {
+            dateStr += "April ";
+        } else if (month == 4) {
+            dateStr += "May ";
+        } else if (month == 5) {
+            dateStr += "June ";
+        } else if (month == 6) {
+            dateStr += "July ";
+        } else if (month == 7) {
+            dateStr += "August ";
+        } else if (month == 8) {
+            dateStr += "September ";
+        } else if (month == 9) {
+            dateStr += "October ";
+        } else if (month == 10) {
+            dateStr += "November ";
+        } else {
+            dateStr += "December ";
+        }
+
+        //iterate through textviews of seven day forecast DAYS and put in correct day of week
+        for (int i = 0; i < 7; i++) {
+            if (dayofweek > 7) {
+                dayofweek=1;
+            }
+            daysofWeekTextViews.get(i).setText(daysofWeek.get(dayofweek - 1));
+            dayofweek++;
+        }
 
 
+        dateStr += rightNow.get(Calendar.DAY_OF_MONTH);
+        date.setText(dateStr);
 
+        //format the time depending on military boolean
+        if (military) {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            time.setText(sdf.format(rightNow.getTime()));
+            int hours = rightNow.get(Calendar.HOUR);
+            int AM_orPM = rightNow.get(Calendar.AM_PM);
+            if (hours < 12) {
+                if (AM_orPM == 1) {
+                    amPmStr = "PM";
+                }
+            } else {
+                if (AM_orPM == 0) {
+                    amPmStr = "AM";
+                }
+
+            }
+            amPm.setText(amPmStr);
+        }
+        else {
+            SimpleDateFormat sdf = new SimpleDateFormat("kk:mm");
+            time.setText(sdf.format(rightNow.getTime()));
+            amPm.setText("");
+        }
+    }
 
 
     public class AsyncTime extends AsyncTask<Void, Void, HashMap> {
 
-    //public class AsyncTime extends AsyncTask<Void, Void, String> {
+        //public class AsyncTime extends AsyncTask<Void, Void, String> {
 
         @Override
         public HashMap doInBackground(Void... voids) {
-            String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign;
-            dailyHoroscopeObject = parser.parse(horoscopeAPISite);
 
+            //parse urls into json objects
+            String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign;
+            //determine which APIs to use depending on celsius boolean
+            if (!celsius) {
+                weatherAPI = "http://api.openweathermap.org/data/2.5/weather?zip=" + zipcodeS + ",us&units=imperial";
+                sevenDayForecast = "http://api.openweathermap.org/data/2.5/forecast/daily?q=" + city + ",US&cnt=7&units==imperial";
+            }
+            else {
+                weatherAPI = "http://api.openweathermap.org/data/2.5/weather?zip=" + zipcodeS + ",us&units=metric";
+                sevenDayForecast = "http://api.openweathermap.org/data/2.5/forecast/daily?q=" + city + ",US&cnt=7&units==metric";
+            }
+            dailyHoroscopeObject = parser.parse(horoscopeAPISite);
+            weatherAPIObject = parser.parse(weatherAPI);
+            sevenDayForecastObject = parser.parse(sevenDayForecast);
+
+            //create hashmap to hold results
             HashMap JSONresults = new HashMap();
 //            dailyStockObject = parser.parse(stockAPISite);
 //            dailyWeatherObject = parser.parse(weatherAPIObject);
             try {
                 JSONObject dailyHoroscope = dailyHoroscopeObject.getJSONObject("horoscope");
                 dailyHoroscopeString = dailyHoroscope.getString("horoscope");
+
+                city = weatherAPIObject.getString("name");
+                JSONObject main = weatherAPIObject.getJSONObject("main");
+                currentTemp = main.getDouble("temp");
+
+                if (!celsius) {
+                    tempStr = String.valueOf(currentTemp).split("\\.")[0] + "°F"; }
+                else {
+                    tempStr = String.valueOf(currentTemp).split("\\.")[0] + "°C";
+                }
+
             } catch (Exception e ){
 
             }
             JSONresults.put("horoscopeString", dailyHoroscopeString);
+            JSONresults.put("currentTemp", tempStr);
+            JSONresults.put("userCity", city);
             return JSONresults;
         }
 
         @Override
         public void onPostExecute(HashMap s) {
-                horoscopeTV.setText(userSign +" daily horoscope \n" + s.get("horoscopeString"));
+            horoscopeTV.setText(userSign +" daily horoscope \n" + s.get("horoscopeString"));
+            location.setText(s.get("userCity").toString());
+            temp.setText(s.get("currentTemp").toString());
+
         }
 
 
     }
-
-
-
 
 
     public void setUpStockCard(){

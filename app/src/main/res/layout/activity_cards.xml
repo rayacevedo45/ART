@@ -28,10 +28,10 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/calenederLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:id="@+id/calenederLL">
+                android:orientation="horizontal">
             <TextView
                 android:id="@+id/ToDoList"
                 android:layout_width="match_parent"
@@ -41,36 +41,39 @@
                 android:hint="To-Do List"/>
 
             <CalendarView
+                android:id="@+id/cv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:id="@+id/cv"/>
+                android:layout_weight="1"/>
 
             </LinearLayout>
 
 
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/card_view"
+        android:id="@+id/weather_card"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:paddingBottom="20dp"
-        card_view:cardBackgroundColor="@android:color/holo_orange_light">
+        android:paddingBottom="20dp">
 
 
         <LinearLayout
+            android:id="@+id/main_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/aurora_short"
             android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/clock_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
         <TextView
             android:id="@+id/time"
+            style="@style/AudioFileInfoOverlayText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="20dp"
@@ -80,10 +83,11 @@
 
             <TextView
                 android:id="@+id/am_pm"
+                style="@style/AudioFileInfoOverlayText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="10dp"
-                android:text="PM"
+                android:text="AM"
                 android:textSize="20dp"/>
 
         </LinearLayout>
@@ -91,10 +95,12 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:id="@+id/date_view">
 
             <TextView
                 android:id="@+id/date"
+                style="@style/AudioFileInfoOverlayText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="20dp"
@@ -104,53 +110,314 @@
 
         </LinearLayout>
 
-            <RelativeLayout
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/sevenday_view"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/sevenday_dayOfWeek">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/dayOne"
+                        android:text="Sun"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"
+                        android:paddingTop="15dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/dayTwo"
+                        android:text="Mon"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"
+                        android:paddingTop="15dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/dayThree"
+                        android:text="Tue"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"
+                        android:paddingTop="15dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/dayFour"
+                        android:text="Wed"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"
+                        android:paddingTop="15dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/dayFive"
+                        android:text="Thu"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"
+                        android:paddingTop="15dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/daySix"
+                        android:text="Fri"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"
+                        android:paddingTop="15dp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/sevenday_dates">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/dateOne"
+                        android:text="06/28"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/dateTwo"
+                        android:text="06/29"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/dateThree"
+                        android:text="06/30"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/dateFour"
+                        android:text="07/01"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/dateFive"
+                        android:text="07/02"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/dateSix"
+                        android:text="07/03"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/sevenday_icons">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/day_sunny"
+                        android:id="@+id/dayone_icon"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/day_sunny"
+                        android:id="@+id/daytwo_icon"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/day_sunny"
+                        android:id="@+id/daythree_icon"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/day_sunny"
+                        android:id="@+id/dayfour_icon"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/day_sunny"
+                        android:id="@+id/dayfive_icon"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/day_sunny"
+                        android:id="@+id/daysix_icon"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/sevenday_temps">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/dayoneTemp"
+                        android:text="79°/59°"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/daytwoTemp"
+                        android:text="79°/59°"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/daythreeTemp"
+                        android:text="79°/59°"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/dayfourTemp"
+                        android:text="79°/59°"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/dayfiveTemp"
+                        android:text="79°/59°"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/daysixTemp"
+                        android:text="79°/59°"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:gravity="center"/>
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
                 android:orientation="horizontal">
-
-
 
                 <TextView
                     android:id="@+id/location"
+                    style="@style/AudioFileInfoOverlayText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_toLeftOf="@+id/temperature"
-                    android:layout_toStartOf="@+id/temperature"
                     android:layout_weight="4"
-                    android:gravity="right"
-                    android:paddingBottom="30dp"
-                    android:paddingRight="20dp"
                     android:text="Long Island City"
-                    android:textSize="20dp" />
+                    android:textSize="20dp"
+                    android:layout_gravity="bottom"
+                    android:paddingBottom="20dp"
+                    android:paddingLeft="20dp"/>
 
                 <TextView
                     android:id="@+id/temperature"
+                    style="@style/AudioFileInfoOverlayText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingBottom="30dp"
-                    android:paddingRight="30dp"
                     android:text="82°F"
-                    android:textSize="20dp" />
+                    android:textSize="20dp"
+                    android:layout_gravity="bottom"
+                    android:paddingBottom="20dp"/>
                 <ImageView
                     android:id="@+id/forecast"
-                    android:layout_width="wrap_content"
+                    android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:layout_above="@+id/location"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:src="@drawable/day_sunny" />
+                    android:src="@drawable/day_sunny"
+                    android:adjustViewBounds="true"/>
 
-
-
-            </RelativeLayout>
+            </LinearLayout>
 
         </LinearLayout>
 
