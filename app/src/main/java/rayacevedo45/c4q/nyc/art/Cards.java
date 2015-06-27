@@ -1,6 +1,7 @@
 package rayacevedo45.c4q.nyc.art;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,9 +13,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import org.json.JSONObject;
@@ -28,13 +33,18 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 
 public class Cards extends ActionBarActivity {
 
-    TextView welcome,horoscopeTV, todotv, date,time, location, temp, amPm, day1, day2, day3, day4, day5, day6, date1, date2, date3, date4, date5, date6;
-    private String weatherAPI, sevenDayForecast, name,birthdayS,zipcodeS,userSign, dateStr, city, tempStr, amPmStr;
+    TextView date,time, location, temp, amPm, day1, day2, day3, day4, day5, day6, date1, date2, date3, date4, date5, date6;
+    private String weatherAPI, sevenDayForecast, dateStr, city, tempStr, amPmStr;
+    TextView welcome,horoscopeTV;
+    private String name,birthdayS,zipcodeS,userSign,timeFormatS,degreeS;
     private JSONParser parser;
     private JSONObject dailyHoroscopeObject, weatherAPIObject, sevenDayForecastObject;
     private String dailyHoroscopeString;
@@ -42,11 +52,17 @@ public class Cards extends ActionBarActivity {
     boolean military, celsius;
     CardView horoscopeCV, weatherCard;
     LinearLayout top;
-    CalendarView cv;
+  //  CalendarView cv;
     Calendar rightNow;
     View weather_layout, sevenDayView;
     ArrayList <String> daysofWeek;
     ArrayList<TextView> daysofWeekTextViews;
+    ListView todoList;
+    ImageView imageView;
+    private ArrayList mNotes;
+    private ArrayAdapter basicAdapter;
+
+
 
 //    public static final String MyPREFERENCES = "MyPrefs" ;
 //    SharedPreferences sharedpreferences;
@@ -60,6 +76,11 @@ public class Cards extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cards);
         initializeViewsAndValues();
+
+        initializeViewsAndValues();
+        parser = new JSONParser();
+        AsyncTime getDailyHoroscope = new AsyncTime();
+        getDailyHoroscope.execute();
 
         //when weather card is click, show seven day view with elongated background
         weatherCard = (CardView) findViewById(R.id.weather_card);
@@ -80,19 +101,49 @@ public class Cards extends ActionBarActivity {
         });
 
         parser = new JSONParser();
-        AsyncTime getDailyHoroscope = new AsyncTime();
-        getDailyHoroscope.execute();
+
+
+        //can set conditions that this loads the screen for
+        // creating a new note or it shows the list depending on current content.
+        ImageButton NoteTest = (ImageButton) findViewById(R.id.openNoteButton);
+        NoteTest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Cards.this, NoteListActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        ImageButton addNewNoteButton = (ImageButton) findViewById(R.id.openNoteButton);
+        addNewNoteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Note note = new Note();
+                note.setTitle("");
+                NotePad.get(getApplicationContext()).addNote(note);
+                Intent i = new Intent(getApplicationContext(), NotePagerActivity.class);
+                i.putExtra(NoteFragment.EXTRA_NOTE_ID, note.getId());
+                startActivityForResult(i, 0);
+            }
+        });
+
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        basicAdapter.notifyDataSetChanged();
     }
 
 
     public void initializeViewsAndValues(){
-
+        mNotes = NotePad.get(getApplicationContext()).getNotes();
         welcome = (TextView) findViewById(R.id.welcomeTV);
         horoscopeCV = (CardView) findViewById(R.id.card_view2);
         horoscopeTV = (TextView) findViewById(R.id.horoscopeTVID);
         top = (LinearLayout) findViewById(R.id.calenederLL);
-        todotv = (TextView) findViewById(R.id.ToDoList);
-        cv = (CalendarView) findViewById(R.id.cv);
+        //cv = (CalendarView) findViewById(R.id.cv);
         date = (TextView) findViewById(R.id.date);
         time = (TextView) findViewById(R.id.time);
         location = (TextView) findViewById(R.id.location);
@@ -111,13 +162,34 @@ public class Cards extends ActionBarActivity {
         date4 = (TextView) findViewById(R.id.dateFour);
         date5 = (TextView) findViewById(R.id.dateFive);
         date6 = (TextView) findViewById(R.id.dateSix);
+       // imageView = (ImageView) findViewById(R.id.weatherIV);
+        todoList = (ListView) findViewById(R.id.todoListView);
+
+        basicAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, mNotes);
+        todoList.setAdapter(basicAdapter);
+        todoList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(Cards.this, NotePagerActivity.class);
+                Note c = (Note) todoList.getItemAtPosition(position);
+                intent.putExtra(NoteFragment.EXTRA_NOTE_ID, c.getId());
+                startActivity(intent);
+
+            }
+        });
 
 
-        SharedPreferences settings = Cards.this.getSharedPreferences("PREFS_NAME", 0);
+
+        SharedPreferences settings;
         settings = Cards.this.getSharedPreferences("PREFS_NAME", 0);
         name = settings.getString("name", "");
         birthdayS = settings.getString("bday", "");
         zipcodeS = settings.getString("zipcode", "");
+        Log.d("!!!",zipcodeS);
+        timeFormatS = settings.getString("timeformat", "");
+        Log.d("@@@",timeFormatS);
+        degreeS = settings.getString("degree", "");
+        Log.d("###",degreeS);
 
 
         Bundle extras = getIntent().getExtras();
@@ -155,7 +227,7 @@ public class Cards extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_cards, menu);
+       // getMenuInflater().inflate(R.menu.menu_cards, menu);
         return true;
     }
 
@@ -180,6 +252,10 @@ public class Cards extends ActionBarActivity {
         Log.d("month", month);
         String day = birthdayS.substring(3, 5);
         Log.d("day", day);
+
+        //Log.d("month", month);
+
+        //Log.d("day", day);
         int monthInt = Integer.parseInt(month);
         int bdayInt = Integer.parseInt(day);
 
@@ -241,7 +317,7 @@ public class Cards extends ActionBarActivity {
 
         //set up arraylists
         daysofWeek = new ArrayList<String>();
-        daysofWeekTextViews = new ArrayList<TextView>();
+
         daysofWeek.add("Sun");
         daysofWeek.add("Mon");
         daysofWeek.add("Tues");
@@ -249,6 +325,15 @@ public class Cards extends ActionBarActivity {
         daysofWeek.add("Thu");
         daysofWeek.add("Fri");
         daysofWeek.add("Sat");
+
+        daysofWeekTextViews = new ArrayList<TextView>();
+        daysofWeekTextViews.add(day1);
+        daysofWeekTextViews.add(day2);
+        daysofWeekTextViews.add(day3);
+        daysofWeekTextViews.add(day4);
+        daysofWeekTextViews.add(day5);
+        daysofWeekTextViews.add(day6);
+
 
         if (dayofweek == 1) {
             dateStr = daysofWeek.get(0) + ", ";
@@ -295,11 +380,11 @@ public class Cards extends ActionBarActivity {
         }
 
         //iterate through textviews of seven day forecast DAYS and put in correct day of week
-        for (int i = 0; i < 7; i++) {
-            if (dayofweek > 7) {
-                dayofweek=1;
+        for (int i = 0; i < 6; i++) {
+            if (dayofweek == 7) {
+                dayofweek=0;
             }
-            daysofWeekTextViews.get(i).setText(daysofWeek.get(dayofweek - 1));
+            daysofWeekTextViews.get(i).setText(daysofWeek.get(dayofweek));
             dayofweek++;
         }
 
@@ -341,7 +426,7 @@ public class Cards extends ActionBarActivity {
         public HashMap doInBackground(Void... voids) {
 
             //parse urls into json objects
-            String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign;
+       
             //determine which APIs to use depending on celsius boolean
             if (!celsius) {
                 weatherAPI = "http://api.openweathermap.org/data/2.5/weather?zip=" + zipcodeS + ",us&units=imperial";
@@ -351,9 +436,27 @@ public class Cards extends ActionBarActivity {
                 weatherAPI = "http://api.openweathermap.org/data/2.5/weather?zip=" + zipcodeS + ",us&units=metric";
                 sevenDayForecast = "http://api.openweathermap.org/data/2.5/forecast/daily?q=" + city + ",US&cnt=7&units==metric";
             }
+            Date date = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+            String sdfS = (sdf.format(date));
+            Log.d("!!!",sdfS);
+            String month2 = sdfS.substring(5, 7);
+            String day2 = sdfS.substring(8, 10);
+
+
+
+            //parse urls into json objects
+            //http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2008-01-01
+           // http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2014-12-30
+            String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign + "&date=2008-" + month2 + "-" + day2;
+            //Log.d("+++",horoscopeAPISite);
+
+            //determine which APIs to use depending on celsius boolean
+
             dailyHoroscopeObject = parser.parse(horoscopeAPISite);
             weatherAPIObject = parser.parse(weatherAPI);
             sevenDayForecastObject = parser.parse(sevenDayForecast);
+
 
             //create hashmap to hold results
             HashMap JSONresults = new HashMap();
@@ -373,14 +476,18 @@ public class Cards extends ActionBarActivity {
                     tempStr = String.valueOf(currentTemp).split("\\.")[0] + "°C";
                 }
 
+
             } catch (Exception e ){
 
             }
             JSONresults.put("horoscopeString", dailyHoroscopeString);
             JSONresults.put("currentTemp", tempStr);
             JSONresults.put("userCity", city);
+
             return JSONresults;
         }
+
+
 
         @Override
         public void onPostExecute(HashMap s) {
@@ -388,15 +495,14 @@ public class Cards extends ActionBarActivity {
             location.setText(s.get("userCity").toString());
             temp.setText(s.get("currentTemp").toString());
 
+                horoscopeTV.setText(userSign.toUpperCase() +" DAILY HOROSCOPE \n" + "\n" + s.get("horoscopeString"));
         }
 
 
     }
 
 
-    public void setUpStockCard(){
 
-    }
     public class OnSwipeTouchListener implements View.OnTouchListener {
 
         private final GestureDetector gestureDetector;
