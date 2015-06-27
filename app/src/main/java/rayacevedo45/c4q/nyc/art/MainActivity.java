@@ -5,16 +5,16 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
 public class MainActivity extends ActionBarActivity {
-    private String name,birthdayS,zipcodeS;
+    private String name,birthdayS,zipcodeS,timeFormatS,degreeS;
     EditText firstName, birthDay, zipcode;
+    TextView timeFormatTV, degreeTV;
     int monthInt, bdayInt;
 
     public static final String MyPREFERENCES = "MyPrefs" ;
@@ -28,6 +28,8 @@ public class MainActivity extends ActionBarActivity {
         firstName = (EditText) findViewById(R.id.firstNameET);
         birthDay = (EditText) findViewById(R.id.birthdayET);
         zipcode = (EditText) findViewById(R.id.zipcodeET);
+        timeFormatTV = (TextView) findViewById(R.id.timeFormat);
+        degreeTV = (TextView) findViewById(R.id.degreesID);
     }
 
     public void next (View v){
@@ -55,6 +57,9 @@ public class MainActivity extends ActionBarActivity {
             zipcodeS = "";
         }
 
+
+
+
         SharedPreferences settings = MainActivity.this.getSharedPreferences("PREFS_NAME", 0);
         settings = MainActivity.this.getSharedPreferences("PREFS_NAME", 0);
         SharedPreferences.Editor editor = settings.edit();
@@ -62,6 +67,8 @@ public class MainActivity extends ActionBarActivity {
         editor.putString("name", name);
         editor.putString("bday", birthdayS);
         editor.putString("zipcode", zipcodeS);
+        editor.putString("timeformat", timeFormatS);
+        editor.putString("degree", degreeS);
         editor.commit();
 
         boolean zipValid;
@@ -80,10 +87,33 @@ public class MainActivity extends ActionBarActivity {
         intent.putExtra("name",name);
         intent.putExtra("birthday", birthdayS);
         intent.putExtra("zipcode", zipcodeS);
+        intent.putExtra("timeformat", timeFormatS);
+        intent.putExtra("degree", degreeS);
         startActivity(intent);
+
+//            JSONArray array;
+//            for (int i = 0; i < array.length(); i++) {
+//                JSONObject item = array.getJSONObject(i);
+//            }
+
+
+
         }
         else {
             Toast.makeText(this,"Please double check inputs", Toast.LENGTH_LONG).show();
         }
     }
+    public void setTimeFormat12 (View v){
+        timeFormatTV.setText("12hr time format");
+    }
+    public void setTimeFormat24 (View v){
+        timeFormatTV.setText("24hr time format");
+    }
+    public void setDegreeC (View v){
+        degreeTV.setText("C");
+    }
+    public void setDegreef (View v){
+        degreeTV.setText("F");
+    }
+
 }
