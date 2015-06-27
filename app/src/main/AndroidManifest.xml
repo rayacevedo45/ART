@@ -28,7 +28,7 @@
             android:label="@string/title_activity_cards" >
         </activity>
         <activity
-            android:name=".MainActivity2Activity"
+            android:name=".LandingPage"
             android:label="@string/title_activity_main_activity2" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

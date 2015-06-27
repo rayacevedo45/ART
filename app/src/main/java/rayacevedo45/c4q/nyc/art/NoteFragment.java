@@ -40,9 +40,9 @@ public class NoteFragment extends Fragment {
     private Button mTimeButton;
     private CheckBox mSolvedBox;
 
-    public static NoteFragment newInstance(UUID crimeId) {
+    public static NoteFragment newInstance(UUID noteId) {
         Bundle args = new Bundle();
-        args.putSerializable(EXTRA_NOTE_ID, crimeId);
+        args.putSerializable(EXTRA_NOTE_ID, noteId);
 
         NoteFragment fragment = new NoteFragment();
         fragment.setArguments(args);
