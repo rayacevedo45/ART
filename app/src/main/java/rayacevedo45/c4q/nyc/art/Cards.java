@@ -105,7 +105,7 @@ public class Cards extends ActionBarActivity {
 
         //can set conditions that this loads the screen for
         // creating a new note or it shows the list depending on current content.
-        ImageButton NoteTest = (ImageButton) findViewById(R.id.openNoteButton);
+        ImageButton NoteTest = (ImageButton) findViewById(R.id.openListButton);
         NoteTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -497,7 +497,6 @@ public class Cards extends ActionBarActivity {
 
                 horoscopeTV.setText(userSign.toUpperCase() +" DAILY HOROSCOPE \n" + "\n" + s.get("horoscopeString"));
         }
-
 
     }
 
