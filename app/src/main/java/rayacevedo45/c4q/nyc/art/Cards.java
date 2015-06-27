@@ -13,8 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,14 +21,16 @@ import android.widget.TextView;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 
 public class Cards extends ActionBarActivity {
 
     TextView welcome,horoscopeTV;
-    private String name,birthdayS,zipcodeS,userSign;
+    private String name,birthdayS,zipcodeS,userSign,timeFormatS,degreeS;
     private JSONParser parser;
     private JSONObject dailyHoroscopeObject;
     private String dailyHoroscopeString;
@@ -55,11 +55,11 @@ public class Cards extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cards);
 
-
+        initializeViewsAndValues();
         parser = new JSONParser();
         AsyncTime getDailyHoroscope = new AsyncTime();
         getDailyHoroscope.execute();
-        initializeViewsAndValues();
+
 
         //can set conditions that this loads the screen for
         // creating a new note or it shows the list depending on current content.
@@ -123,12 +123,18 @@ public class Cards extends ActionBarActivity {
         name = settings.getString("name", "");
         birthdayS = settings.getString("bday", "");
         zipcodeS = settings.getString("zipcode", "");
+        Log.d("!!!",zipcodeS);
+        timeFormatS = settings.getString("timeformat", "");
+        Log.d("@@@",timeFormatS);
+        degreeS = settings.getString("degree", "");
+        Log.d("###",degreeS);
+
 
         Bundle extras = getIntent().getExtras();
 
         welcome.setText("Hello, " + name);
 
-        userSign = findUserSign();
+        findUserSign();
 
         horoscopeCV.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
             @Override
@@ -154,13 +160,13 @@ public class Cards extends ActionBarActivity {
     }
 
 
-    public String findUserSign() {
+    public void findUserSign() {
         String month = birthdayS.toString().substring(0, 2);
         //Log.d("{{{",month);
 
-        Log.d("month", month);
+        //Log.d("month", month);
         String day = birthdayS.toString().substring(3, 5);
-        Log.d("day", day);
+        //Log.d("day", day);
         int monthInt = Integer.parseInt(month);
         int bdayInt = Integer.parseInt(day);
 
@@ -212,7 +218,6 @@ public class Cards extends ActionBarActivity {
         } else {
             userSign = "capricorn";
         }
-        return userSign;
     }
 
 
@@ -226,25 +231,49 @@ public class Cards extends ActionBarActivity {
 
         @Override
         public HashMap doInBackground(Void... voids) {
-            String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign;
+            Date date = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+            String sdfS = (sdf.format(date));
+            Log.d("!!!",sdfS);
+            String month2 = sdfS.substring(5, 7);
+            String day2 = sdfS.substring(8, 10);
+
+
+
+            //parse urls into json objects
+            //http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2008-01-01
+           // http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2014-12-30
+            String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign + "&date=2008-" + month2 + "-" + day2;
+            //Log.d("+++",horoscopeAPISite);
+
+            //determine which APIs to use depending on celsius boolean
+
             dailyHoroscopeObject = parser.parse(horoscopeAPISite);
 
+
+            //create hashmap to hold results
             HashMap JSONresults = new HashMap();
 //            dailyStockObject = parser.parse(stockAPISite);
 //            dailyWeatherObject = parser.parse(weatherAPIObject);
             try {
                 JSONObject dailyHoroscope = dailyHoroscopeObject.getJSONObject("horoscope");
                 dailyHoroscopeString = dailyHoroscope.getString("horoscope");
+
+
+
             } catch (Exception e ){
 
             }
             JSONresults.put("horoscopeString", dailyHoroscopeString);
+
             return JSONresults;
         }
 
+
+
         @Override
         public void onPostExecute(HashMap s) {
-                horoscopeTV.setText(userSign +" daily horoscope \n" + s.get("horoscopeString"));
+                horoscopeTV.setText(userSign.toUpperCase() +" DAILY HOROSCOPE \n" + "\n" + s.get("horoscopeString"));
         }
 
 

@@ -44,15 +44,60 @@
         android:id="@+id/zipcodeET"
         android:phoneNumber="true"/>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/timeFormat"
+            android:text="Time Format"
+            android:textSize="20sp"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12hr"
+                android:onClick="setTimeFormat12"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="24hr"
+                android:onClick="setTimeFormat24"/>
+            </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/degreesID"
+            android:text="Would you like degrees in C of F?"
+            android:textSize="20sp"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="C"
+                android:onClick="setDegreeC"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F"
+                android:onClick="setDegreef"/>
+        </LinearLayout>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Next"
             android:layout_gravity="center"
             android:gravity="center|bottom"
-            android:layout_marginTop="150dp"
+            android:layout_marginTop="10dp"
             android:onClick="next"/>
-
+    </LinearLayout>
 
 
 
