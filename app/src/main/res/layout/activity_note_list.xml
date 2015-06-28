@@ -36,6 +36,7 @@
         android:layout_alignParentEnd="true"
         android:text="Clear Completed Tasks"
         android:outlineProvider="background"
-        android:onClick="deleteAllNotes" />
+        android:onClick="deleteAllNotes"
+        android:visibility="gone" />
 
 </LinearLayout>
