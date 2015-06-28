@@ -52,7 +52,7 @@ public class Cards extends ActionBarActivity {
     boolean military, celsius;
     CardView horoscopeCV, weatherCard;
     LinearLayout top;
-  //  CalendarView cv;
+    CalendarView cv;
     Calendar rightNow;
     View weather_layout, sevenDayView;
     ArrayList <String> daysofWeek;
@@ -75,8 +75,6 @@ public class Cards extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cards);
-        initializeViewsAndValues();
-
         initializeViewsAndValues();
         parser = new JSONParser();
         AsyncTime getDailyHoroscope = new AsyncTime();
@@ -142,7 +140,7 @@ public class Cards extends ActionBarActivity {
         welcome = (TextView) findViewById(R.id.welcomeTV);
         horoscopeCV = (CardView) findViewById(R.id.card_view2);
         horoscopeTV = (TextView) findViewById(R.id.horoscopeTVID);
-        top = (LinearLayout) findViewById(R.id.calenederLL);
+        top = (LinearLayout) findViewById(R.id.calendarLL);
         //cv = (CalendarView) findViewById(R.id.cv);
         date = (TextView) findViewById(R.id.date);
         time = (TextView) findViewById(R.id.time);
