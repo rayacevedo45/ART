@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import java.util.Date;
 import java.util.UUID;
@@ -39,6 +40,7 @@ public class NoteFragment extends Fragment {
     private Button mDateButton;
     private Button mTimeButton;
     private CheckBox mSolvedBox;
+    private ImageButton delButton;
 
     public static NoteFragment newInstance(UUID noteId) {
         Bundle args = new Bundle();
@@ -57,6 +59,7 @@ public class NoteFragment extends Fragment {
 
         mNote = NotePad.get(getActivity()).getNote(noteId);
 
+
         setHasOptionsMenu(true);
     }
 
@@ -71,6 +74,7 @@ public class NoteFragment extends Fragment {
 //                getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
 //            }
 //        }
+        delButton = (ImageButton) v.findViewById(R.id.deleteThisNote);
         mTitleField = (EditText) v.findViewById(R.id.note_title);
 
             mTitleField.setText(mNote.getTitle());
@@ -125,10 +129,31 @@ public class NoteFragment extends Fragment {
         mSolvedBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mNote.setSolved(isChecked);
+
+                if(mNote.isSolved()){
+                    delButton.setVisibility(View.VISIBLE);
+                    setDeleteListener(true);
+                } else {
+                    delButton.setVisibility(View.INVISIBLE);
+                }
             }
         });
 
         return v;
+    }
+
+    public void setDeleteListener(boolean set){
+        if (set) {
+            delButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {//fixme
+                    NotePad notePad = NotePad.get(getActivity());
+                    notePad.deleteNote(mNote);
+                    notePad.saveNotes();
+                    getActivity().finish();
+                }
+            });
+        }
     }
 
     private void updateDate()

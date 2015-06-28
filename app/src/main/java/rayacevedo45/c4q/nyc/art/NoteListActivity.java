@@ -207,6 +207,7 @@ public class NoteListActivity extends ActionBarActivity {
             CheckBox solvedCheckedBox = (CheckBox) convertView.findViewById(R.id.note_list_item_CheckBox);
             solvedCheckedBox.setChecked(c.isSolved());
 
+
             return convertView;
         }
     }
