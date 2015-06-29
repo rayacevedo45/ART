@@ -19,8 +19,18 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,6 +69,8 @@ public class Cards extends ActionBarActivity {
         parser = new JSONParser();
         AsyncTime getDailyHoroscope = new AsyncTime();
         getDailyHoroscope.execute();
+        AsyncNews getNews = new AsyncNews();
+        getNews.execute();
 
 
         //can set conditions that this loads the screen for
@@ -244,7 +256,7 @@ public class Cards extends ActionBarActivity {
             //http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2008-01-01
            // http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2014-12-30
             String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign + "&date=2008-" + month2 + "-" + day2;
-            //Log.d("+++",horoscopeAPISite);
+            Log.d("+++",horoscopeAPISite);
 
             //determine which APIs to use depending on celsius boolean
 
@@ -258,6 +270,7 @@ public class Cards extends ActionBarActivity {
             try {
                 JSONObject dailyHoroscope = dailyHoroscopeObject.getJSONObject("horoscope");
                 dailyHoroscopeString = dailyHoroscope.getString("horoscope");
+                Log.d("***", dailyHoroscopeString);
 
 
 
@@ -273,7 +286,10 @@ public class Cards extends ActionBarActivity {
 
         @Override
         public void onPostExecute(HashMap s) {
+            //String hs = s.get("horoscopeString");
+            //if (s.get("horoscopeString")
                 horoscopeTV.setText(userSign.toUpperCase() +" DAILY HOROSCOPE \n" + "\n" + s.get("horoscopeString"));
+//            Log.d("crazy***", (String) s.get("horoscopeString"));
         }
 
 
@@ -329,5 +345,84 @@ public class Cards extends ActionBarActivity {
             }
         }
     }
-}
 
+
+    public class AsyncNews extends AsyncTask<Void, Void, String> {
+        @Override
+        public String doInBackground(Void... voids) {
+
+            try {
+                String timesUrl = "http://api.nytimes.com/svc/news/v3/content/all/all/720.json?limit=1&offset=1&api-key=6a53d7200f35783a967c577bd64357d5%3A14%3A72395287";
+                URL url = new URL(timesUrl);
+
+                // contact API on server using this url
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.connect();
+
+                // get JSON string as a response
+                String newsJson = readStream(connection.getInputStream());
+                JSONObject newsJsonObject = new JSONObject(newsJson);
+                JSONArray results = newsJsonObject.getJSONArray("results");
+                JSONObject firstItem = results.getJSONObject(0);
+                firstItem.getString("abstract");
+
+//                JSONObject one = multimedia.getJSONObject("caption");
+//                caption = one.getString("caption");
+//                Log.d(";/;",caption);
+                //String caption = null;
+                String caption = firstItem.getString("abstract");
+//
+//                InputStream inputStream ;
+//                for (int i = 0; i < results.length(); i++) {
+//                    JSONObject objectsInResults = abstractt.getJSONObject("i");
+//                    JSONObject captionJSON = objectsInResults.getJSONObject("abstract");
+
+                    //caption = captionJSON.getString("caption");
+                    Log.d(";/;",caption);
+// String mediaString = media.getString("m");
+//                    JSONObject media = objectsInItems.getJSONObject("fixed_height");
+//                    String mediaString = media.getString("url");
+//                    url = new URL(mediaString);
+//                    connection = (HttpURLConnection) url.openConnection();
+//                    connection.setRequestMethod("GET");
+//                    connection.connect();
+//                    inputStream = connection.getInputStream();
+//                    bitmap = BitmapFactory.decodeStream(inputStream);
+                return caption;
+
+                } catch (MalformedURLException e1) {
+                e1.printStackTrace();
+            } catch (ProtocolException e1) {
+                e1.printStackTrace();
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
+
+
+            catch (Exception e) {
+                e.printStackTrace();
+
+            }
+            return null;
+
+        }
+
+        @Override
+        public void onPostExecute(String s) {
+
+        }
+
+    private String readStream(InputStream in) throws IOException {
+        char[] buffer = new char[1024 * 4];
+        InputStreamReader reader = new InputStreamReader(in, "UTF8");
+        StringWriter writer = new StringWriter();
+        int n;
+        while ((n = reader.read(buffer)) != -1) {
+            writer.write(buffer, 0, n);
+        }
+        return writer.toString();
+    }}}
