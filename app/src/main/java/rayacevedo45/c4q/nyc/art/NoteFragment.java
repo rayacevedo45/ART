@@ -21,6 +21,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import java.util.Date;
 import java.util.UUID;
@@ -94,7 +95,7 @@ public class NoteFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable c) {
-                // left blank
+
             }
         });
 
@@ -147,13 +148,17 @@ public class NoteFragment extends Fragment {
             delButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {//fixme
-                    NotePad notePad = NotePad.get(getActivity());
-                    notePad.deleteNote(mNote);
-                    notePad.saveNotes();
-                    getActivity().finish();
+                  deleteSelectedN();
                 }
             });
         }
+    }
+
+    private void deleteSelectedN(){
+        NotePad notePad = NotePad.get(getActivity());
+        notePad.deleteNote(mNote);
+        notePad.saveNotes();
+        getActivity().finish();
     }
 
     private void updateDate()
@@ -194,10 +199,7 @@ public class NoteFragment extends Fragment {
                 }
                 return true;
             case R.id.menu_item_delete_note:
-                NotePad notePad = NotePad.get(getActivity());
-                notePad.deleteNote(mNote);
-                notePad.saveNotes();
-                getActivity().finish();
+               deleteSelectedN();   //or delete selected note(s)
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -209,9 +211,6 @@ public class NoteFragment extends Fragment {
         super.onPause();
         NotePad.get(getActivity()).saveNotes();
     }
-
-
-
 
 }
 

@@ -61,6 +61,7 @@ public class Cards extends ActionBarActivity {
     ImageView imageView;
     private ArrayList mNotes;
     private ArrayAdapter basicAdapter;
+    private TextView stockSelector;
 
 
 
@@ -98,7 +99,6 @@ public class Cards extends ActionBarActivity {
             }
         });
 
-        parser = new JSONParser();
 
 
         //can set conditions that this loads the screen for
@@ -160,7 +160,7 @@ public class Cards extends ActionBarActivity {
         date4 = (TextView) findViewById(R.id.dateFour);
         date5 = (TextView) findViewById(R.id.dateFive);
         date6 = (TextView) findViewById(R.id.dateSix);
-       // imageView = (ImageView) findViewById(R.id.weatherIV);
+        // imageView = (ImageView) findViewById(R.id.weatherIV);
         todoList = (ListView) findViewById(R.id.todoListView);
 
         basicAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, mNotes);
@@ -225,7 +225,7 @@ public class Cards extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-       // getMenuInflater().inflate(R.menu.menu_cards, menu);
+        // getMenuInflater().inflate(R.menu.menu_cards, menu);
         return true;
     }
 
@@ -424,7 +424,7 @@ public class Cards extends ActionBarActivity {
         public HashMap doInBackground(Void... voids) {
 
             //parse urls into json objects
-       
+
             //determine which APIs to use depending on celsius boolean
             if (!celsius) {
                 weatherAPI = "http://api.openweathermap.org/data/2.5/weather?zip=" + zipcodeS + ",us&units=imperial";
@@ -442,10 +442,9 @@ public class Cards extends ActionBarActivity {
             String day2 = sdfS.substring(8, 10);
 
 
-
             //parse urls into json objects
             //http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2008-01-01
-           // http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2014-12-30
+            // http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2014-12-30
             String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign + "&date=2008-" + month2 + "-" + day2;
             //Log.d("+++",horoscopeAPISite);
 
@@ -489,11 +488,15 @@ public class Cards extends ActionBarActivity {
 
         @Override
         public void onPostExecute(HashMap s) {
-            horoscopeTV.setText(userSign +" daily horoscope \n" + s.get("horoscopeString"));
+            try {
+                horoscopeTV.setText(userSign + " daily horoscope \n" + s.get("horoscopeString"));
             location.setText(s.get("userCity").toString());
             temp.setText(s.get("currentTemp").toString());
 
-                horoscopeTV.setText(userSign.toUpperCase() +" DAILY HOROSCOPE \n" + "\n" + s.get("horoscopeString"));
+                horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + s.get("horoscopeString"));
+            } catch(Exception e){
+
+            }
         }
 
     }
@@ -544,4 +547,3 @@ public class Cards extends ActionBarActivity {
         }
     }
 }
-

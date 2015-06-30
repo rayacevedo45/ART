@@ -35,7 +35,15 @@ public class NoteListActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_list);
 
-        mNotes = NotePad.get(getApplicationContext()).getNotes();
+        mNotes = NotePad.get(getApplicationContext()).getNotes();   ///Testing this to see if it removes blank notes
+        for (Note x : mNotes){
+            if (  (x.getTitle().toString()).equals("")){
+                mNotes.remove(x);
+            }
+        }
+
+
+
 
         final ListView listView = (ListView) findViewById(R.id.listview);
         customadapter = new NoteAdapter(mNotes);
@@ -206,8 +214,6 @@ public class NoteListActivity extends ActionBarActivity {
 
             CheckBox solvedCheckedBox = (CheckBox) convertView.findViewById(R.id.note_list_item_CheckBox);
             solvedCheckedBox.setChecked(c.isSolved());
-
-
             return convertView;
         }
     }
