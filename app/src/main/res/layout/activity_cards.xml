@@ -25,7 +25,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="visible">
 
             <android.support.v7.widget.CardView
                 xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -33,14 +34,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:paddingBottom="20dp">
+                android:paddingBottom="20dp"
+                android:visibility="visible">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@android:color/holo_blue_dark"
-                android:id="@+id/calendarLL">
+                android:id="@+id/calendarLL"
+                android:visibility="visible">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -98,7 +101,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:paddingBottom="20dp">
+        android:paddingBottom="20dp"
+                android:visibility="visible">
 
 
         <LinearLayout
@@ -474,7 +478,11 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_gravity="center"
-        android:paddingBottom="20dp">
+        android:backgroundTint="#ffc3a3ff"
+        android:paddingBottom="20dp"
+        card_view:cardUseCompatPadding="true"
+        android:visibility="visible">
+
 
         <TextView
             android:id="@+id/horoscopeTVID"
@@ -484,19 +492,50 @@
 
         </android.support.v7.widget.CardView>
 
-    <android.support.v7.widget.CardView
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/card_viewStocks"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_gravity="center"
-        android:paddingBottom="20dp">
-        <TextView
+            <android.support.v7.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/card_viewStocks"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:layout_gravity="center"
+                android:paddingBottom="20dp"
+                card_view:cardBackgroundColor="@android:color/holo_orange_light"
+                card_view:cardCornerRadius="4dp"
+                card_view:cardPreventCornerOverlap="true"
+                card_view:cardUseCompatPadding="true">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Stocks"
-            android:textSize="30sp"
-            android:background="@android:color/black"/>
+            android:orientation="vertical"
+            android:weightSum="1">
+
+        <ListView android:layout_width="match_parent"
+            android:layout_height="76dp"
+            android:id="@+id/stockLV_id"
+            android:layout_weight="0.47" />
+
+            <HorizontalScrollView
+
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.66"
+            android:fillViewport="false"
+            android:id="@+id/horizSV">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:id="@+id/stockPicker_id"
+                android:text="Select additional stocks"
+                android:background="#037bacff"/>
+
+            </HorizontalScrollView>
+
+
+        </LinearLayout>
+
+
+
 
     </android.support.v7.widget.CardView>
 

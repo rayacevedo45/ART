@@ -3,6 +3,11 @@ package rayacevedo45.c4q.nyc.art;
 import android.content.Context;
 import android.util.Log;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,6 +25,7 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by c4q-Abass on 6/23/15.
@@ -37,6 +43,42 @@ public class JSONParser {
 
     public JSONParser(){
 
+    }
+
+    public String getStockQuotesJSON() throws  JSONException, IOException{
+        DefaultHttpClient httpClient = new DefaultHttpClient(new BasicHttpParams());
+        HttpPost httppost;
+        httppost = new HttpPost(Stock.APIurl);
+        httppost.setHeader("Content-type", "application/json");
+        InputStream inputStream = null;
+        String stockResults = null;
+
+            HttpResponse response = httpClient.execute(httppost);
+            HttpEntity entity = response.getEntity();
+            inputStream = entity.getContent();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            StringBuilder stringBuilder = new StringBuilder();
+
+            String line = null;
+            while((line = reader.readLine()) != null) {
+                stringBuilder.append(line + "\n");
+            }
+            stockResults = stringBuilder.toString();
+
+        JSONObject jsonObject = new JSONObject(stockResults);
+        JSONObject queryJSONObject = jsonObject.getJSONObject("query");
+        JSONObject resultsJSONObject = queryJSONObject.getJSONObject("results");
+        JSONObject quoteJSONObject = resultsJSONObject.getJSONObject("quote");
+        String stockSymbol = quoteJSONObject.getString("symbol");
+
+        JSONArray queryArray = quoteJSONObject.names();
+        List<String> list = new ArrayList<String>();
+        for (int i = 0; i < queryArray.length(); i++) {
+            list.add(queryArray.getString(i));
+        }
+
+
+        return stockSymbol;
     }
 
     public JSONObject parse(String webPage) {

@@ -49,7 +49,7 @@ public class Cards extends ActionBarActivity {
     TextView welcome,horoscopeTV;
     private String name,birthdayS,zipcodeS,userSign,timeFormatS,degreeS;
     private JSONParser parser;
-    private JSONObject dailyHoroscopeObject, weatherAPIObject, sevenDayForecastObject;
+    private JSONObject dailyHoroscopeObject, weatherAPIObject, sevenDayForecastObject, dailyStockObject;
     private String dailyHoroscopeString, linkS, abstractS;
     private double currentTemp;
     boolean military, celsius;
@@ -64,6 +64,8 @@ public class Cards extends ActionBarActivity {
     ImageView imageView;
     private ArrayList mNotes;
     private ArrayAdapter basicAdapter;
+    private TextView stockSelector;
+    private ListView stockLV;
 
 
 
@@ -86,6 +88,8 @@ public class Cards extends ActionBarActivity {
         getNews.execute();
         AsyncNews2 getLink = new AsyncNews2();
         getLink.execute();
+        AsyncStocks getStocks = new AsyncStocks();
+        getStocks.execute();
 
         //when weather card is click, show seven day view with elongated background
         weatherCard = (CardView) findViewById(R.id.weather_card);
@@ -104,7 +108,6 @@ public class Cards extends ActionBarActivity {
             }
         });
 
-        parser = new JSONParser();
 
 
         //can set conditions that this loads the screen for
@@ -166,10 +169,15 @@ public class Cards extends ActionBarActivity {
         date4 = (TextView) findViewById(R.id.dateFour);
         date5 = (TextView) findViewById(R.id.dateFive);
         date6 = (TextView) findViewById(R.id.dateSix);
+
+        // imageView = (ImageView) findViewById(R.id.weatherIV);
+
         todoList = (ListView) findViewById(R.id.todoListView);
         newsTV = (TextView) findViewById(R.id.newTVID);
         cardView4 = (CardView) findViewById(R.id.card_view4);
         stocksCV = (CardView) findViewById(R.id.card_viewStocks);
+        stockSelector = (TextView) findViewById(R.id.stockPicker_id);
+        stockLV = (ListView) findViewById(R.id.stockLV_id);
         topCV = (CardView) findViewById(R.id.topID);
 
         basicAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, mNotes);
@@ -250,7 +258,7 @@ public class Cards extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-       // getMenuInflater().inflate(R.menu.menu_cards, menu);
+        // getMenuInflater().inflate(R.menu.menu_cards, menu);
         return true;
     }
 
@@ -449,7 +457,7 @@ public class Cards extends ActionBarActivity {
         public HashMap doInBackground(Void... voids) {
 
             //parse urls into json objects
-       
+
             //determine which APIs to use depending on celsius boolean
             if (!celsius) {
                 weatherAPI = "http://api.openweathermap.org/data/2.5/weather?zip=" + zipcodeS + ",us&units=imperial";
@@ -467,10 +475,9 @@ public class Cards extends ActionBarActivity {
             String day2 = sdfS.substring(8, 10);
 
 
-
             //parse urls into json objects
             //http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2008-01-01
-           // http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2014-12-30
+            // http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2014-12-30
             String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign + "&date=2008-" + month2 + "-" + day2;
             //Log.d("+++",horoscopeAPISite);
 
@@ -481,11 +488,15 @@ public class Cards extends ActionBarActivity {
             sevenDayForecastObject = parser.parse(sevenDayForecast);
 
 
-            //create hashmap to hold results
+
             HashMap JSONresults = new HashMap();
 //            dailyStockObject = parser.parse(stockAPISite);
 //            dailyWeatherObject = parser.parse(weatherAPIObject);
             try {
+
+
+               // JSONObject resultsJSONObject = dailyStockObject.getJSONObject("quote");
+
                 JSONObject dailyHoroscope = dailyHoroscopeObject.getJSONObject("horoscope");
                 dailyHoroscopeString = dailyHoroscope.getString("horoscope");
 
@@ -503,6 +514,7 @@ public class Cards extends ActionBarActivity {
             } catch (Exception e ){
 
             }
+
             JSONresults.put("horoscopeString", dailyHoroscopeString);
             JSONresults.put("currentTemp", tempStr);
             JSONresults.put("userCity", city);
@@ -514,11 +526,18 @@ public class Cards extends ActionBarActivity {
 
         @Override
         public void onPostExecute(HashMap s) {
-            horoscopeTV.setText(userSign +" daily horoscope \n" + s.get("horoscopeString"));
+            try {
+
+                horoscopeTV.setText(userSign + " daily horoscope \n" + s.get("horoscopeString").toString());
             location.setText(s.get("userCity").toString());
             temp.setText(s.get("currentTemp").toString());
 
-                horoscopeTV.setText(userSign.toUpperCase() +" DAILY HOROSCOPE \n" + "\n" + s.get("horoscopeString"));
+                horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + s.get("horoscopeString"));
+
+                Log.d("stock test", s.get("stockYHOO").toString());
+            } catch(Exception e){
+
+            }
         }
 
     }
@@ -632,6 +651,39 @@ public class Cards extends ActionBarActivity {
             return writer.toString();
         }
     }
+
+    public class AsyncStocks extends AsyncTask<Void, Void, ArrayList> {
+        ArrayList<String> stockResults;
+        @Override
+        protected ArrayList doInBackground(Void... params) {
+            try {
+                dailyStockObject = parser.parse(Stock.APIurl);
+                JSONObject dailyStocksQuery = dailyStockObject.getJSONObject("query");
+                JSONObject resultsJSONObject = dailyStocksQuery.getJSONObject("results");
+                JSONArray stocksJSONArray = resultsJSONObject.getJSONArray("quote");
+                JSONObject x1 = (JSONObject) stocksJSONArray.get(0);
+                JSONObject x2 = (JSONObject) stocksJSONArray.get(1);
+                JSONObject x3 = (JSONObject) stocksJSONArray.get(2);
+                JSONObject x4 = (JSONObject) stocksJSONArray.get(3);
+                stockResults = new ArrayList<>();
+                for (int i = 0; i < stocksJSONArray.length(); i++) {
+                    JSONObject x = (JSONObject) stocksJSONArray.get(i);
+                    String caption = x.getString("symbol");
+                    stockResults.add(caption);
+                }
+            } catch (Exception e){
+
+            }
+
+            return stockResults;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList s){
+           ArrayAdapter stockAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, s);
+            stockLV.setAdapter(stockAdapter);
+        }
+    }
     public class AsyncNews2 extends AsyncTask<Void, Void, String> {
         @Override
         public String doInBackground(Void... voids) {
@@ -664,9 +716,6 @@ public class Cards extends ActionBarActivity {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-
-
-
             catch (Exception e) {
                 e.printStackTrace();
 
@@ -695,6 +744,8 @@ public class Cards extends ActionBarActivity {
         return writer.toString();
     }
 }
+
+
 
 
 
