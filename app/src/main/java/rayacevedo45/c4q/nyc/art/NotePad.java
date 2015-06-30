@@ -2,7 +2,6 @@ package rayacevedo45.c4q.nyc.art;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.UUID;

@@ -25,7 +25,17 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <android.support.v7.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/topID"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingBottom="20dp"
+                android:visibility="visible">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -82,6 +92,7 @@
                 </LinearLayout>
 
             </LinearLayout>
+            </android.support.v7.widget.CardView>
 
 
             <android.support.v7.widget.CardView
@@ -472,6 +483,7 @@
         card_view:cardUseCompatPadding="true"
         android:visibility="visible">
 
+
         <TextView
             android:id="@+id/horoscopeTVID"
             android:layout_width="match_parent"
@@ -480,17 +492,17 @@
 
         </android.support.v7.widget.CardView>
 
-    <android.support.v7.widget.CardView
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/card_viewStocks"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_gravity="center"
-        android:paddingBottom="20dp"
-        card_view:cardCornerRadius="4dp"
-        card_view:cardPreventCornerOverlap="true"
-        card_view:cardUseCompatPadding="true"
-        android:visibility="visible">
+            <android.support.v7.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/card_viewStocks"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:layout_gravity="center"
+                android:paddingBottom="20dp"
+                card_view:cardBackgroundColor="@android:color/holo_orange_light"
+                card_view:cardCornerRadius="4dp"
+                card_view:cardPreventCornerOverlap="true"
+                card_view:cardUseCompatPadding="true">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -498,23 +510,31 @@
             android:weightSum="1">
 
         <ListView android:layout_width="match_parent"
-            android:layout_height="224dp"
+            android:layout_height="76dp"
             android:id="@+id/stockLV_id"
-            android:background="#de76a5f4" />
+            android:layout_weight="0.47" />
 
-        <HorizontalScrollView
+            <HorizontalScrollView
+
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.66">
+            android:layout_height="0dp"
+            android:layout_weight="0.66"
+            android:fillViewport="false"
+            android:id="@+id/horizSV">
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:id="@+id/stockPicker_id"
-                android:text=""/>
+                android:text="Select additional stocks"
+                android:background="#037bacff"/>
 
             </HorizontalScrollView>
+
+
         </LinearLayout>
+
+
 
 
     </android.support.v7.widget.CardView>
@@ -523,13 +543,21 @@
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card_view4"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="300dp"
         android:layout_gravity="center"
-        android:background="#ffff2adf"
         android:backgroundTint="#ffc3a3ff"
         android:paddingBottom="20dp"
-        card_view:cardCornerRadius="4dp"
         card_view:cardUseCompatPadding="true">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:textColor="@android:color/black"
+            android:linksClickable="true"
+            android:autoLink="web"
+            android:id="@+id/newTVID"/>
+
 
     </android.support.v7.widget.CardView>
 

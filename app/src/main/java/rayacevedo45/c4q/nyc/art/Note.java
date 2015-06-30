@@ -1,8 +1,5 @@
 package rayacevedo45.c4q.nyc.art;
 
-import android.content.Intent;
-import android.view.View;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
