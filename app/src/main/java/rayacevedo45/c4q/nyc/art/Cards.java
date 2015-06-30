@@ -145,6 +145,7 @@ public class Cards extends ActionBarActivity {
 
 
     public void initializeViewsAndValues(){
+
         mNotes = NotePad.get(getApplicationContext()).getNotes();
         welcome = (TextView) findViewById(R.id.welcomeTV);
         horoscopeCV = (CardView) findViewById(R.id.card_view2);
@@ -680,8 +681,12 @@ public class Cards extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(ArrayList s){
-           ArrayAdapter stockAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, s);
-            stockLV.setAdapter(stockAdapter);
+            try {
+                ArrayAdapter stockAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, s);
+                stockLV.setAdapter(stockAdapter);
+            } catch (Exception e){
+
+            }
         }
     }
     public class AsyncNews2 extends AsyncTask<Void, Void, String> {
