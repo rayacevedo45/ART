@@ -1,8 +1,8 @@
 package rayacevedo45.c4q.nyc.art;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.internal.widget.AdapterViewCompat;
 import android.text.format.DateFormat;
 import android.util.Log;
