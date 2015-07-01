@@ -49,7 +49,7 @@ public class Cards extends ActionBarActivity {
     TextView welcome,horoscopeTV;
     private String name,birthdayS,zipcodeS,userSign,timeFormatS,degreeS;
     private JSONParser parser;
-    private JSONObject dailyHoroscopeObject, weatherAPIObject, sevenDayForecastObject, dailyStockObject;
+    private JSONObject dailyHoroscopeObject, weatherAPIObject, sevenDayForecastObject;
     private String dailyHoroscopeString, linkS, abstractS;
     private double currentTemp;
     boolean military, celsius;
@@ -64,7 +64,6 @@ public class Cards extends ActionBarActivity {
     ImageView imageView;
     private ArrayList mNotes;
     private ArrayAdapter basicAdapter;
-    private TextView stockSelector;
     private ListView stockLV;
 
 
@@ -108,6 +107,7 @@ public class Cards extends ActionBarActivity {
             }
         });
 
+        parser = new JSONParser();
 
 
         //can set conditions that this loads the screen for
@@ -169,16 +169,13 @@ public class Cards extends ActionBarActivity {
         date4 = (TextView) findViewById(R.id.dateFour);
         date5 = (TextView) findViewById(R.id.dateFive);
         date6 = (TextView) findViewById(R.id.dateSix);
-
-        // imageView = (ImageView) findViewById(R.id.weatherIV);
-
         todoList = (ListView) findViewById(R.id.todoListView);
         newsTV = (TextView) findViewById(R.id.newTVID);
         cardView4 = (CardView) findViewById(R.id.card_view4);
         stocksCV = (CardView) findViewById(R.id.card_viewStocks);
-        stockSelector = (TextView) findViewById(R.id.stockPicker_id);
-        stockLV = (ListView) findViewById(R.id.stockLV_id);
         topCV = (CardView) findViewById(R.id.topID);
+
+        stockLV = (ListView) findViewById(R.id.stockLV_id);
 
         basicAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, mNotes);
         todoList.setAdapter(basicAdapter);
@@ -223,18 +220,18 @@ public class Cards extends ActionBarActivity {
                 topCV.setVisibility(View.GONE);
             }
         });
-        weatherCard.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
-            @Override
-            public void onSwipeLeft() {
-                weatherCard.setVisibility(View.GONE);
-            }
-        });
-        stocksCV.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
-            @Override
-            public void onSwipeLeft() {
-                stocksCV.setVisibility(View.GONE);
-            }
-        });
+//        weatherCard.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
+//            @Override
+//            public void onSwipeLeft() {
+//                weatherCard.setVisibility(View.GONE);
+//            }
+//        });
+//        stocksCV.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
+//            @Override
+//            public void onSwipeLeft() {
+//                stocksCV.setVisibility(View.GONE);
+//            }
+//        });
         horoscopeCV.setOnTouchListener(new OnSwipeTouchListener(Cards.this)
         {
             @Override
@@ -475,30 +472,30 @@ public class Cards extends ActionBarActivity {
             String day2 = sdfS.substring(8, 10);
 
 
+
             //parse urls into json objects
             //http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2008-01-01
             // http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2014-12-30
-            String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign + "&date=2008-" + month2 + "-" + day2;
-            //Log.d("+++",horoscopeAPISite);
+            String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign + "&date=2010-" + month2 + "-" + 29;
+            Log.d("+++",horoscopeAPISite);
 
             //determine which APIs to use depending on celsius boolean
 
-            dailyHoroscopeObject = parser.parse(horoscopeAPISite);
+
+
             weatherAPIObject = parser.parse(weatherAPI);
             sevenDayForecastObject = parser.parse(sevenDayForecast);
 
 
-
+            //create hashmap to hold results
             HashMap JSONresults = new HashMap();
 //            dailyStockObject = parser.parse(stockAPISite);
 //            dailyWeatherObject = parser.parse(weatherAPIObject);
             try {
-
-
-               // JSONObject resultsJSONObject = dailyStockObject.getJSONObject("quote");
-
+                dailyHoroscopeObject = parser.parse(horoscopeAPISite);
                 JSONObject dailyHoroscope = dailyHoroscopeObject.getJSONObject("horoscope");
                 dailyHoroscopeString = dailyHoroscope.getString("horoscope");
+                Log.d("test horoscope", dailyHoroscopeString);
 
                 city = weatherAPIObject.getString("name");
                 JSONObject main = weatherAPIObject.getJSONObject("main");
@@ -514,7 +511,6 @@ public class Cards extends ActionBarActivity {
             } catch (Exception e ){
 
             }
-
             JSONresults.put("horoscopeString", dailyHoroscopeString);
             JSONresults.put("currentTemp", tempStr);
             JSONresults.put("userCity", city);
@@ -526,19 +522,24 @@ public class Cards extends ActionBarActivity {
 
         @Override
         public void onPostExecute(HashMap s) {
+
             try {
+                String horoscopeString = "";
+                if (s.get("horoscopeString").toString() != null){
+                   horoscopeString = s.get("horoscopeString").toString();
+                } else {
+                    horoscopeString = getString(R.string.horoscopeDefault);
+                }
+                horoscopeTV.setText(userSign + " daily horoscope \n" + horoscopeString);
+                location.setText(s.get("userCity").toString());
+                temp.setText(s.get("currentTemp").toString());
 
-                horoscopeTV.setText(userSign + " daily horoscope \n" + s.get("horoscopeString").toString());
-            location.setText(s.get("userCity").toString());
-            temp.setText(s.get("currentTemp").toString());
-
-                horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + s.get("horoscopeString"));
-
-                Log.d("stock test", s.get("stockYHOO").toString());
+                horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + "     " + s.get("horoscopeString"));
             } catch(Exception e){
 
             }
         }
+
 
     }
 
@@ -636,7 +637,7 @@ public class Cards extends ActionBarActivity {
         @Override
         public void onPostExecute(String s) {
             abstractS = "     " + s;
-           // newsTV.setText("Trending on nytimes.com \n \n" + s + "\n \n" + "Read Full Story:\n " + linkS  );
+            newsTV.setText("Trending on nytimes.com \n \n" + s + "\n \n" + "Read Full Story:\n " + linkS  );
 
         }
 
@@ -651,13 +652,56 @@ public class Cards extends ActionBarActivity {
             return writer.toString();
         }
     }
+    public class AsyncNews2 extends AsyncTask<Void, Void, String> {
+        @Override
+        public String doInBackground(Void... voids) {
+
+            try {
+                String timesUrl = "http://api.nytimes.com/svc/news/v3/content/all/all/720.json?limit=1&offset=1&api-key=6a53d7200f35783a967c577bd64357d5%3A14%3A72395287";
+//                URL url = new URL(timesUrl);
+//
+//                // contact API on server using this url
+//                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//                connection.setRequestMethod("GET");
+//                connection.connect();
+//
+//                // get JSON string as a response
+//                String newsJson = readStream(connection.getInputStream());
+//                JSONObject newsJsonObject = new JSONObject(newsJson);
+                JSONObject newsJsonObject = parser.parse(timesUrl);
+                JSONArray results = newsJsonObject.getJSONArray("results");
+                JSONObject firstItem = results.getJSONObject(0);
+                //String caption = firstItem.getString("abstract");
+                String link = firstItem.getString("url");
+
+                return link;
+
+            }
+
+            catch (Exception e) {
+                e.printStackTrace();
+
+            }
+            return null;
+
+        }
+
+        @Override
+        public void onPostExecute(String s2) {
+            linkS = s2;
+            //newsTV2.setText("Read Full Story:" + s2 );
+            newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS  );
+            newsTV.setMovementMethod(LinkMovementMethod.getInstance());
+
+        }
+    }
 
     public class AsyncStocks extends AsyncTask<Void, Void, ArrayList> {
         ArrayList<String> stockResults;
         @Override
         protected ArrayList doInBackground(Void... params) {
             try {
-                dailyStockObject = parser.parse(Stock.APIurl);
+                JSONObject dailyStockObject = parser.parse("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quote%20where%20symbol%20in%20(%22YHOO%22%2C%22AAPL%22%2C%22GOOG%22%2C%22MSFT%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=");
                 JSONObject dailyStocksQuery = dailyStockObject.getJSONObject("query");
                 JSONObject resultsJSONObject = dailyStocksQuery.getJSONObject("results");
                 JSONArray stocksJSONArray = resultsJSONObject.getJSONArray("quote");
@@ -680,72 +724,24 @@ public class Cards extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(ArrayList s){
-           ArrayAdapter stockAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, s);
-            stockLV.setAdapter(stockAdapter);
-        }
-    }
-    public class AsyncNews2 extends AsyncTask<Void, Void, String> {
-        @Override
-        public String doInBackground(Void... voids) {
-
             try {
-                String timesUrl = "http://api.nytimes.com/svc/news/v3/content/all/all/720.json?limit=1&offset=1&api-key=6a53d7200f35783a967c577bd64357d5%3A14%3A72395287";
-                URL url = new URL(timesUrl);
-
-                // contact API on server using this url
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.connect();
-
-                // get JSON string as a response
-                String newsJson = readStream(connection.getInputStream());
-                JSONObject newsJsonObject = new JSONObject(newsJson);
-                JSONArray results = newsJsonObject.getJSONArray("results");
-                JSONObject firstItem = results.getJSONObject(0);
-                //String caption = firstItem.getString("abstract");
-                String link = firstItem.getString("url");
-
-                 return link;
-
-            } catch (MalformedURLException e1) {
-                e1.printStackTrace();
-            } catch (ProtocolException e1) {
-                e1.printStackTrace();
-            } catch (JSONException e1) {
-                e1.printStackTrace();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
+                ArrayAdapter stockAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, s);
+                stockLV.setAdapter(stockAdapter);
+            } catch (Exception e){
 
             }
-            return null;
-
         }
 
-        @Override
-        public void onPostExecute(String s2) {
-            linkS = s2;
-            //newsTV2.setText("Read Full Story:" + s2 );
-            newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS  );
-            newsTV.setMovementMethod(LinkMovementMethod.getInstance());
-
+        public String readStream(InputStream in) throws IOException {
+            char[] buffer = new char[1024 * 4];
+            InputStreamReader reader = new InputStreamReader(in, "UTF8");
+            StringWriter writer = new StringWriter();
+            int n;
+            while ((n = reader.read(buffer)) != -1) {
+                writer.write(buffer, 0, n);
+            }
+            return writer.toString();
         }
-}
-    private String readStream(InputStream in) throws IOException {
-        char[] buffer = new char[1024 * 4];
-        InputStreamReader reader = new InputStreamReader(in, "UTF8");
-        StringWriter writer = new StringWriter();
-        int n;
-        while ((n = reader.read(buffer)) != -1) {
-            writer.write(buffer, 0, n);
-        }
-        return writer.toString();
     }
 }
-
-
-
-
 
