@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.CardView;
+import android.text.format.DateFormat;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -14,9 +15,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -66,6 +69,7 @@ public class Cards extends ActionBarActivity {
     private ArrayAdapter basicAdapter;
     private ListView stockLV;
     private TextView stockInfoTV;
+    private ArrayList mStocks;
 
 
 
@@ -148,6 +152,7 @@ public class Cards extends ActionBarActivity {
     public void initializeViewsAndValues(){
         stockInfoTV = (TextView) findViewById(R.id.stockInfo_id);
         mNotes = NotePad.get(getApplicationContext()).getNotes();
+        mStocks = new ArrayList<Stock>();
         welcome = (TextView) findViewById(R.id.welcomeTV);
         horoscopeCV = (CardView) findViewById(R.id.card_view2);
         horoscopeTV = (TextView) findViewById(R.id.horoscopeTVID);
@@ -191,8 +196,6 @@ public class Cards extends ActionBarActivity {
 
             }
         });
-
-
 
         SharedPreferences settings;
         settings = Cards.this.getSharedPreferences("PREFS_NAME", 0);
@@ -600,35 +603,19 @@ public class Cards extends ActionBarActivity {
                 URL url = new URL(timesUrl);
 
                 // contact API on server using this url
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.connect();
+//                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//                connection.setRequestMethod("GET");
+//                connection.connect();
 
                 // get JSON string as a response
-                String newsJson = readStream(connection.getInputStream());
-                JSONObject newsJsonObject = new JSONObject(newsJson);
+//                String newsJson = readStream(connection.getInputStream());
+                JSONObject newsJsonObject = parser.parse(timesUrl);
+                        //new JSONObject(newsJson);
                 JSONArray results = newsJsonObject.getJSONArray("results");
                 JSONObject firstItem = results.getJSONObject(0);
                 String caption = firstItem.getString("abstract");
-
-
-
                 return caption;
-
-
-            } catch (MalformedURLException e1) {
-                e1.printStackTrace();
-            } catch (ProtocolException e1) {
-                e1.printStackTrace();
-            } catch (JSONException e1) {
-                e1.printStackTrace();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-
-
-
-            catch (Exception e) {
+            }  catch (Exception e) {
                 e.printStackTrace();
 
             }
@@ -660,16 +647,6 @@ public class Cards extends ActionBarActivity {
 
             try {
                 String timesUrl = "http://api.nytimes.com/svc/news/v3/content/all/all/720.json?limit=1&offset=1&api-key=6a53d7200f35783a967c577bd64357d5%3A14%3A72395287";
-//                URL url = new URL(timesUrl);
-//
-//                // contact API on server using this url
-//                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//                connection.setRequestMethod("GET");
-//                connection.connect();
-//
-//                // get JSON string as a response
-//                String newsJson = readStream(connection.getInputStream());
-//                JSONObject newsJsonObject = new JSONObject(newsJson);
                 JSONObject newsJsonObject = parser.parse(timesUrl);
                 JSONArray results = newsJsonObject.getJSONArray("results");
                 JSONObject firstItem = results.getJSONObject(0);
@@ -697,18 +674,25 @@ public class Cards extends ActionBarActivity {
 
         }
     }
+    public void addStockToParam(String stock){
+
+    }
 
     public class AsyncStocks extends AsyncTask<Void, Void, ArrayList> {
-        ArrayList<Stock> stockResults;
+        String stockAPI_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quote%20where%20symbol%20in%20";
+
+
+
         @Override
         protected ArrayList doInBackground(Void... params) {
             try {
-                JSONObject dailyStockObject = parser.parse("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quote%20where%20symbol%20in%20(%22YHOO%22%2C%22AAPL%22%2C%22GOOG%22%2C%22MSFT%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=");
+                String stockParams = "(%22YHOO%22%2C%22AAPL%22%2C%22GOOG%22%2C%22MSFT%22)";
+                String stockFormat = "&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=";
+                JSONObject dailyStockObject = parser.parse(stockAPI_URL + stockParams + stockFormat );
                 JSONObject dailyStocksQuery = dailyStockObject.getJSONObject("query");
                 JSONObject resultsJSONObject = dailyStocksQuery.getJSONObject("results");
                 JSONArray stocksJSONArray = resultsJSONObject.getJSONArray("quote");
 
-                stockResults = new ArrayList<Stock>();
                 for (int i = 0; i < stocksJSONArray.length(); i++) {
                     JSONObject x = (JSONObject) stocksJSONArray.get(i);
                     String caption = x.getString("symbol");
@@ -722,13 +706,13 @@ public class Cards extends ActionBarActivity {
 
                     Stock y = new Stock(caption, dayshigh);
 
-                    stockResults.add(y);
+                    mStocks.add(y);
                 }
             } catch (Exception e){
 
             }
 
-            return stockResults;
+            return mStocks;
         }
 
         @Override
@@ -739,8 +723,8 @@ public class Cards extends ActionBarActivity {
             }
 
             try {
-                ArrayAdapter stockAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, stockArrayList);
-                stockLV.setAdapter(stockAdapter);
+                //stockLV.setAdapter(new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, mStocks));
+                stockLV.setAdapter(new StockAdapter(stockArrayList));
             } catch (Exception e){
 
             }
@@ -755,6 +739,38 @@ public class Cards extends ActionBarActivity {
             });
         }
 
+    }
+
+    public class StockAdapter extends ArrayAdapter<Stock> {
+
+        public int getCount() {
+            return mStocks.size();
+        }
+
+        @Override
+        public Stock getItem(int position) {
+            return (Stock)mStocks.get(position);
+        }
+
+
+        public StockAdapter(ArrayList<Stock> stocks) {
+            super(getApplicationContext(), 0, stocks);
+        }
+
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = getLayoutInflater().inflate(R.layout.list_item_stock, parent, false); //try list_item_note nxt
+            }
+            Stock c = getItem(position);
+
+
+            TextView stockTitle = (TextView) convertView.findViewById(R.id.stockViewText);
+            stockTitle.setText(c.getId());
+
+            return convertView;
+        }
     }
 }
 

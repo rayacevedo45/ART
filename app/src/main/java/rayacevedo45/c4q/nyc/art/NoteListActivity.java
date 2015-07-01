@@ -180,11 +180,13 @@ public class NoteListActivity extends ActionBarActivity {
 
         @Override
         public Note getItem(int position) {
+
             return mNotes.get(position);
         }
 
 
         public NoteAdapter(ArrayList<Note> notes) {
+
             super(getApplicationContext(), 0, notes);
         }
 

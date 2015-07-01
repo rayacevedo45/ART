@@ -509,6 +509,12 @@
             android:orientation="vertical"
             android:weightSum="1">
 
+         <Button
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:id="@+id/viewButton"
+             android:text="STOCKS"/>
+
         <ListView android:layout_width="match_parent"
             android:layout_height="76dp"
             android:id="@+id/stockLV_id"
@@ -526,7 +532,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/stockInfo_id"
-                android:text="Select additional stocks"
                 android:background="#037bacff"/>
 
             </HorizontalScrollView>
