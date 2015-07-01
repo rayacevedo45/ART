@@ -65,6 +65,7 @@ public class Cards extends ActionBarActivity {
     private ArrayList mNotes;
     private ArrayAdapter basicAdapter;
     private ListView stockLV;
+    private TextView stockInfoTV;
 
 
 
@@ -145,6 +146,7 @@ public class Cards extends ActionBarActivity {
 
 
     public void initializeViewsAndValues(){
+        stockInfoTV = (TextView) findViewById(R.id.stockInfo_id);
         mNotes = NotePad.get(getApplicationContext()).getNotes();
         welcome = (TextView) findViewById(R.id.welcomeTV);
         horoscopeCV = (CardView) findViewById(R.id.card_view2);
@@ -697,7 +699,7 @@ public class Cards extends ActionBarActivity {
     }
 
     public class AsyncStocks extends AsyncTask<Void, Void, ArrayList> {
-        ArrayList<String> stockResults;
+        ArrayList<Stock> stockResults;
         @Override
         protected ArrayList doInBackground(Void... params) {
             try {
@@ -705,15 +707,22 @@ public class Cards extends ActionBarActivity {
                 JSONObject dailyStocksQuery = dailyStockObject.getJSONObject("query");
                 JSONObject resultsJSONObject = dailyStocksQuery.getJSONObject("results");
                 JSONArray stocksJSONArray = resultsJSONObject.getJSONArray("quote");
-                JSONObject x1 = (JSONObject) stocksJSONArray.get(0);
-                JSONObject x2 = (JSONObject) stocksJSONArray.get(1);
-                JSONObject x3 = (JSONObject) stocksJSONArray.get(2);
-                JSONObject x4 = (JSONObject) stocksJSONArray.get(3);
-                stockResults = new ArrayList<>();
+
+                stockResults = new ArrayList<Stock>();
                 for (int i = 0; i < stocksJSONArray.length(); i++) {
                     JSONObject x = (JSONObject) stocksJSONArray.get(i);
                     String caption = x.getString("symbol");
-                    stockResults.add(caption);
+                    String dayshigh = x.getString("DaysHigh");
+                    String daysLow = x.getString("DaysLow");
+                    String daysHigh = x.getString("DaysHigh");
+                    String yearLow = x.getString("YearLow");
+                    String yearHigh = x.getString("YearHigh");
+                    String marketcAP = x.getString("MarketCapitalization");
+                    String lastTradePrice = x.getString("LastTradePriceOnly");
+
+                    Stock y = new Stock(caption, dayshigh);
+
+                    stockResults.add(y);
                 }
             } catch (Exception e){
 
@@ -724,24 +733,28 @@ public class Cards extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(ArrayList s){
+            ArrayList<Stock> stockArrayList = new ArrayList<>();
+            for (int i = 0; i < s.size(); i++){
+                stockArrayList.add(new Stock(s.get(i).toString()));
+            }
+
             try {
-                ArrayAdapter stockAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, s);
+                ArrayAdapter stockAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, stockArrayList);
                 stockLV.setAdapter(stockAdapter);
             } catch (Exception e){
 
             }
+            stockLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    stockInfoTV.setText(String.valueOf(id)); //and another pertinent information
+                    Log.d("test stock id", id + " ");
+
+                }
+            });
         }
 
-        public String readStream(InputStream in) throws IOException {
-            char[] buffer = new char[1024 * 4];
-            InputStreamReader reader = new InputStreamReader(in, "UTF8");
-            StringWriter writer = new StringWriter();
-            int n;
-            while ((n = reader.read(buffer)) != -1) {
-                writer.write(buffer, 0, n);
-            }
-            return writer.toString();
-        }
     }
 }
 
