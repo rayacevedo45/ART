@@ -476,7 +476,7 @@ public class Cards extends ActionBarActivity {
             //parse urls into json objects
             //http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2008-01-01
             // http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2014-12-30
-            String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign + "&date=2010-" + month2 + "-" + 29;
+            String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign + "&date=2010-" + month2 + "-" + day2;
             Log.d("+++",horoscopeAPISite);
 
             //determine which APIs to use depending on celsius boolean
@@ -511,7 +511,9 @@ public class Cards extends ActionBarActivity {
             } catch (Exception e ){
 
             }
+
             JSONresults.put("horoscopeString", dailyHoroscopeString);
+//            Log.d("{}|", dailyHoroscopeString);
             JSONresults.put("currentTemp", tempStr);
             JSONresults.put("userCity", city);
 
@@ -525,16 +527,22 @@ public class Cards extends ActionBarActivity {
 
             try {
                 String horoscopeString = "";
+                String dailyHoroscopeString3 = "";
                 if (s.get("horoscopeString").toString() != null){
                    horoscopeString = s.get("horoscopeString").toString();
+                    Log.d("!@!",horoscopeString);
+                   dailyHoroscopeString3 = horoscopeString.replace("&apos;","\'");
+
+
                 } else {
-                    horoscopeString = getString(R.string.horoscopeDefault);
+                    dailyHoroscopeString3 = getString(R.string.horoscopeDefault);
                 }
-                horoscopeTV.setText(userSign + " daily horoscope \n" + horoscopeString);
+                //horoscopeTV.setText(userSign + " daily horoscope \n" + dailyHoroscopeString3);
+                Log.d("@#@",dailyHoroscopeString3);
                 location.setText(s.get("userCity").toString());
                 temp.setText(s.get("currentTemp").toString());
 
-                horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + "     " + s.get("horoscopeString"));
+                horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + "     " + dailyHoroscopeString3);
             } catch(Exception e){
 
             }
