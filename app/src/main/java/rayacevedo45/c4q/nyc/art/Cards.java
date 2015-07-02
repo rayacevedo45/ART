@@ -87,10 +87,7 @@ public class Cards extends ActionBarActivity {
         parser = new JSONParser();
         AsyncTime getDailyHoroscope = new AsyncTime();
         getDailyHoroscope.execute();
-        AsyncNews getNews = new AsyncNews();
-        getNews.execute();
-        AsyncNews2 getLink = new AsyncNews2();
-        getLink.execute();
+
         AsyncStocks getStocks = new AsyncStocks();
         getStocks.execute();
 
@@ -453,6 +450,7 @@ public class Cards extends ActionBarActivity {
 
 
     public class AsyncTime extends AsyncTask<Void, Void, HashMap> {
+        String caption, link;
 
         //public class AsyncTime extends AsyncTask<Void, Void, String> {
 
@@ -512,6 +510,14 @@ public class Cards extends ActionBarActivity {
                 else {
                     tempStr = String.valueOf(currentTemp).split("\\.")[0] + "°C";
                 }
+                //Ray - parsing nY TIMES URL
+                String timesUrl = "http://api.nytimes.com/svc/news/v3/content/all/all/720.json?limit=1&offset=1&api-key=6a53d7200f35783a967c577bd64357d5%3A14%3A72395287";
+                JSONObject newsJsonObject = parser.parse(timesUrl);
+                //new JSONObject(newsJson);
+                JSONArray results = newsJsonObject.getJSONArray("results");
+                JSONObject firstItem = results.getJSONObject(0);
+                caption = firstItem.getString("abstract");
+                link = firstItem.getString("url");
 
 
             } catch (Exception e ){
@@ -522,6 +528,8 @@ public class Cards extends ActionBarActivity {
 //            Log.d("{}|", dailyHoroscopeString);
             JSONresults.put("currentTemp", tempStr);
             JSONresults.put("userCity", city);
+            JSONresults.put("caption", caption);
+            JSONresults.put("link", link);
 
             return JSONresults;
         }
@@ -549,6 +557,9 @@ public class Cards extends ActionBarActivity {
                 temp.setText(s.get("currentTemp").toString());
 
                 horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + "     " + dailyHoroscopeString3);
+                abstractS = "     " + s.get("caption");
+                linkS = s.get("link").toString();
+                newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS  );
             } catch(Exception e){
 
             }
@@ -603,112 +614,6 @@ public class Cards extends ActionBarActivity {
         }
     }
 
-    public class AsyncNews extends AsyncTask<Void, Void, String> {
-        @Override
-        public String doInBackground(Void... voids) {
-
-            try {
-                String timesUrl = "http://api.nytimes.com/svc/news/v3/content/all/all/720.json?limit=1&offset=1&api-key=6a53d7200f35783a967c577bd64357d5%3A14%3A72395287";
-                URL url = new URL(timesUrl);
-
-                // contact API on server using this url
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.connect();
-
-                // get JSON string as a response
-                String newsJson = readStream(connection.getInputStream());
-                JSONObject newsJsonObject = new JSONObject(newsJson);
-                JSONArray results = newsJsonObject.getJSONArray("results");
-                JSONObject firstItem = results.getJSONObject(0);
-                String caption = firstItem.getString("abstract");
-
-
-
-                return caption;
-
-
-            } catch (MalformedURLException e1) {
-                e1.printStackTrace();
-            } catch (ProtocolException e1) {
-                e1.printStackTrace();
-            } catch (JSONException e1) {
-                e1.printStackTrace();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-
-
-
-            catch (Exception e) {
-                e.printStackTrace();
-
-            }
-            return null;
-
-        }
-
-        @Override
-        public void onPostExecute(String s) {
-            abstractS = "     " + s;
-            newsTV.setText("Trending on nytimes.com \n \n" + s + "\n \n" + "Read Full Story:\n " + linkS  );
-
-        }
-
-        private String readStream(InputStream in) throws IOException {
-            char[] buffer = new char[1024 * 4];
-            InputStreamReader reader = new InputStreamReader(in, "UTF8");
-            StringWriter writer = new StringWriter();
-            int n;
-            while ((n = reader.read(buffer)) != -1) {
-                writer.write(buffer, 0, n);
-            }
-            return writer.toString();
-        }
-    }
-    public class AsyncNews2 extends AsyncTask<Void, Void, String> {
-        @Override
-        public String doInBackground(Void... voids) {
-
-            try {
-                String timesUrl = "http://api.nytimes.com/svc/news/v3/content/all/all/720.json?limit=1&offset=1&api-key=6a53d7200f35783a967c577bd64357d5%3A14%3A72395287";
-//                URL url = new URL(timesUrl);
-//
-//                // contact API on server using this url
-//                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//                connection.setRequestMethod("GET");
-//                connection.connect();
-//
-//                // get JSON string as a response
-//                String newsJson = readStream(connection.getInputStream());
-//                JSONObject newsJsonObject = new JSONObject(newsJson);
-                JSONObject newsJsonObject = parser.parse(timesUrl);
-                JSONArray results = newsJsonObject.getJSONArray("results");
-                JSONObject firstItem = results.getJSONObject(0);
-                //String caption = firstItem.getString("abstract");
-                String link = firstItem.getString("url");
-
-                return link;
-
-            }
-
-            catch (Exception e) {
-                e.printStackTrace();
-
-            }
-            return null;
-
-        }
-
-        @Override
-        public void onPostExecute(String s2) {
-            linkS = s2;
-            //newsTV2.setText("Read Full Story:" + s2 );
-            newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS  );
-            newsTV.setMovementMethod(LinkMovementMethod.getInstance());
-
-        }
-    }
 
     public class AsyncStocks extends AsyncTask<Void, Void, ArrayList> {
         String stockAPI_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quote%20where%20symbol%20in%20";
