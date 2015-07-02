@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:paddingBottom="20dp"
-                android:visibility="visible">
+                android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -100,7 +100,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:paddingBottom="20dp">
+                android:paddingBottom="20dp"
+                android:visibility="gone">
 
 
                 <LinearLayout
@@ -492,7 +493,7 @@
         android:backgroundTint="#ffc3a3ff"
         android:paddingBottom="20dp"
         card_view:cardUseCompatPadding="true"
-        android:visibility="visible">
+        android:visibility="gone">
 
 
         <TextView
@@ -558,6 +559,21 @@
                         android:layout_weight="0.66"
                         android:fillViewport="false"
                         android:id="@+id/horizSV">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                        <CheckBox
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Facebook"/>
+
+                        <CheckBox
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Twitter"/>
+                        </LinearLayout>
 
 
 
