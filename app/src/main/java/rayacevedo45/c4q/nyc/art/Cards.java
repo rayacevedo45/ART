@@ -1,10 +1,16 @@
 package rayacevedo45.c4q.nyc.art;
 
+import android.annotation.TargetApi;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.CardView;
 import android.text.method.LinkMovementMethod;
@@ -69,6 +75,7 @@ public class Cards extends ActionBarActivity {
     private TextView stockInfoTV;
     private ArrayList mStocks;
     private StockAdapter stockAdapter;
+    private String stockParams;
 
 
 
@@ -109,6 +116,32 @@ public class Cards extends ActionBarActivity {
         });
 
         parser = new JSONParser();
+
+        Handler handler = new Handler();
+        //handler.postDelayed()
+        Runnable runnable = new Runnable() {
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void run() {
+                NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                Notification.Builder builder = new  Notification.Builder(Cards.this);
+
+
+                builder.setContentTitle("notification");
+                builder.setContentText("Start wrapping up your awesome demo.");
+                builder.setSmallIcon(R.drawable.monarealframe);
+
+                //Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.monarealframe);
+                //builder.setLargeIcon(largeIcon);
+                builder.setPriority(2);
+                builder.setLights(Color.BLUE, 500, 500);
+
+
+                Notification notification = builder.build();
+                nm.notify(1, notification);
+            }
+        };
+        handler.postDelayed(runnable, 60000*4);
 
 
         //can set conditions that this loads the screen for
@@ -253,27 +286,6 @@ public class Cards extends ActionBarActivity {
 
     public void SetSevenDayInfo () {
 
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        // getMenuInflater().inflate(R.menu.menu_cards, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
 
@@ -485,8 +497,6 @@ public class Cards extends ActionBarActivity {
 
             //determine which APIs to use depending on celsius boolean
 
-
-
             weatherAPIObject = parser.parse(weatherAPI);
             sevenDayForecastObject = parser.parse(sevenDayForecast);
 
@@ -532,6 +542,10 @@ public class Cards extends ActionBarActivity {
             JSONresults.put("link", link);
 
             return JSONresults;
+        }
+
+        public void appendNewStockstoParam(String param){
+            param = stockParams; //fixme
         }
 
 
@@ -615,15 +629,17 @@ public class Cards extends ActionBarActivity {
     }
 
 
+
     public class AsyncStocks extends AsyncTask<Void, Void, ArrayList> {
-        String stockAPI_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quote%20where%20symbol%20in%20";
+        String stockAPI_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quote%20where%20symbol%20in%20(%22";
 
 
 
         @Override
         protected ArrayList doInBackground(Void... params) {
             try {
-                String stockParams = "(%22YHOO%22%2C%22AAPL%22%2C%22GOOG%22%2C%22MSFT%22)";
+                //add new stocks to beginning of listview like so: "GLW%22%2C%22"
+                String stockParams = "%22YHOO%22%2C%22AAPL%22%2C%22GOOG%22%2C%22MSFT%22)";
                 String stockFormat = "&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=";
                 JSONObject dailyStockObject = parser.parse(stockAPI_URL + stockParams + stockFormat );
                 JSONObject dailyStocksQuery = dailyStockObject.getJSONObject("query");
