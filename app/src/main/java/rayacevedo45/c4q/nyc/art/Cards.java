@@ -70,6 +70,7 @@ public class Cards extends ActionBarActivity {
     private ListView stockLV;
     private TextView stockInfoTV;
     private ArrayList mStocks;
+    private StockAdapter stockAdapter;
 
 
 
@@ -88,10 +89,6 @@ public class Cards extends ActionBarActivity {
         parser = new JSONParser();
         AsyncTime getDailyHoroscope = new AsyncTime();
         getDailyHoroscope.execute();
-        AsyncNews getNews = new AsyncNews();
-        getNews.execute();
-        AsyncNews2 getLink = new AsyncNews2();
-        getLink.execute();
         AsyncStocks getStocks = new AsyncStocks();
         getStocks.execute();
 
@@ -452,7 +449,7 @@ public class Cards extends ActionBarActivity {
 
 
     public class AsyncTime extends AsyncTask<Void, Void, HashMap> {
-
+        String caption, link;
         //public class AsyncTime extends AsyncTask<Void, Void, String> {
 
         @Override
@@ -485,9 +482,6 @@ public class Cards extends ActionBarActivity {
             Log.d("+++",horoscopeAPISite);
 
             //determine which APIs to use depending on celsius boolean
-
-
-
             weatherAPIObject = parser.parse(weatherAPI);
             sevenDayForecastObject = parser.parse(sevenDayForecast);
 
@@ -512,6 +506,15 @@ public class Cards extends ActionBarActivity {
                     tempStr = String.valueOf(currentTemp).split("\\.")[0] + "°C";
                 }
 
+                //Ray - parsing nY TIMES URL
+                String timesUrl = "http://api.nytimes.com/svc/news/v3/content/all/all/720.json?limit=1&offset=1&api-key=6a53d7200f35783a967c577bd64357d5%3A14%3A72395287";
+                JSONObject newsJsonObject = parser.parse(timesUrl);
+                        //new JSONObject(newsJson);
+                JSONArray results = newsJsonObject.getJSONArray("results");
+                JSONObject firstItem = results.getJSONObject(0);
+                caption = firstItem.getString("abstract");
+                link = firstItem.getString("url");
+
 
             } catch (Exception e ){
 
@@ -519,6 +522,8 @@ public class Cards extends ActionBarActivity {
             JSONresults.put("horoscopeString", dailyHoroscopeString);
             JSONresults.put("currentTemp", tempStr);
             JSONresults.put("userCity", city);
+            JSONresults.put("caption", caption);
+            JSONresults.put("link", link);
 
             return JSONresults;
         }
@@ -540,6 +545,11 @@ public class Cards extends ActionBarActivity {
                 temp.setText(s.get("currentTemp").toString());
 
                 horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + "     " + s.get("horoscopeString"));
+
+                abstractS = "     " + s.get("caption");
+                linkS = s.get("link").toString();
+            newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS  );
+
             } catch(Exception e){
 
             }
@@ -547,7 +557,6 @@ public class Cards extends ActionBarActivity {
 
 
     }
-
 
 
     public class OnSwipeTouchListener implements View.OnTouchListener {
@@ -594,86 +603,7 @@ public class Cards extends ActionBarActivity {
         }
     }
 
-    public class AsyncNews extends AsyncTask<Void, Void, String> {
-        @Override
-        public String doInBackground(Void... voids) {
 
-            try {
-                String timesUrl = "http://api.nytimes.com/svc/news/v3/content/all/all/720.json?limit=1&offset=1&api-key=6a53d7200f35783a967c577bd64357d5%3A14%3A72395287";
-                URL url = new URL(timesUrl);
-
-                // contact API on server using this url
-//                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//                connection.setRequestMethod("GET");
-//                connection.connect();
-
-                // get JSON string as a response
-//                String newsJson = readStream(connection.getInputStream());
-                JSONObject newsJsonObject = parser.parse(timesUrl);
-                        //new JSONObject(newsJson);
-                JSONArray results = newsJsonObject.getJSONArray("results");
-                JSONObject firstItem = results.getJSONObject(0);
-                String caption = firstItem.getString("abstract");
-                return caption;
-            }  catch (Exception e) {
-                e.printStackTrace();
-
-            }
-            return null;
-
-        }
-
-        @Override
-        public void onPostExecute(String s) {
-            abstractS = "     " + s;
-            newsTV.setText("Trending on nytimes.com \n \n" + s + "\n \n" + "Read Full Story:\n " + linkS  );
-
-        }
-
-        private String readStream(InputStream in) throws IOException {
-            char[] buffer = new char[1024 * 4];
-            InputStreamReader reader = new InputStreamReader(in, "UTF8");
-            StringWriter writer = new StringWriter();
-            int n;
-            while ((n = reader.read(buffer)) != -1) {
-                writer.write(buffer, 0, n);
-            }
-            return writer.toString();
-        }
-    }
-    public class AsyncNews2 extends AsyncTask<Void, Void, String> {
-        @Override
-        public String doInBackground(Void... voids) {
-
-            try {
-                String timesUrl = "http://api.nytimes.com/svc/news/v3/content/all/all/720.json?limit=1&offset=1&api-key=6a53d7200f35783a967c577bd64357d5%3A14%3A72395287";
-                JSONObject newsJsonObject = parser.parse(timesUrl);
-                JSONArray results = newsJsonObject.getJSONArray("results");
-                JSONObject firstItem = results.getJSONObject(0);
-                //String caption = firstItem.getString("abstract");
-                String link = firstItem.getString("url");
-
-                return link;
-
-            }
-
-            catch (Exception e) {
-                e.printStackTrace();
-
-            }
-            return null;
-
-        }
-
-        @Override
-        public void onPostExecute(String s2) {
-            linkS = s2;
-            //newsTV2.setText("Read Full Story:" + s2 );
-            newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS  );
-            newsTV.setMovementMethod(LinkMovementMethod.getInstance());
-
-        }
-    }
     public void addStockToParam(String stock){
 
     }
@@ -696,15 +626,16 @@ public class Cards extends ActionBarActivity {
                 for (int i = 0; i < stocksJSONArray.length(); i++) {
                     JSONObject x = (JSONObject) stocksJSONArray.get(i);
                     String caption = x.getString("symbol");
-                    String dayshigh = x.getString("DaysHigh");
-                    String daysLow = x.getString("DaysLow");
                     String daysHigh = x.getString("DaysHigh");
+                    String daysLow = x.getString("DaysLow");
                     String yearLow = x.getString("YearLow");
                     String yearHigh = x.getString("YearHigh");
                     String marketcAP = x.getString("MarketCapitalization");
                     String lastTradePrice = x.getString("LastTradePriceOnly");
 
-                    Stock y = new Stock(caption, dayshigh);
+
+                    //( String id, String lastTradePriceOnly, String yearLow, String daysHigh, String daysLow, String yearHigh, String daysRange, String change)
+                    Stock y = new Stock(caption, daysHigh, daysLow, yearHigh, yearLow, marketcAP, lastTradePrice);
 
                     mStocks.add(y);
                 }
@@ -723,18 +654,22 @@ public class Cards extends ActionBarActivity {
             }
 
             try {
-                //stockLV.setAdapter(new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, mStocks));
-                stockLV.setAdapter(new StockAdapter(stockArrayList));
+                //stockLV.setAdapter(new ArrayAdapter<Stock>(getApplicationContext(), android.R.layout.simple_list_item_1, mStocks));
+                stockAdapter = new StockAdapter(stockArrayList);
+                stockLV.setAdapter(stockAdapter);
+                stockInfoTV.setText("Powered by Yahoo Finance");
+                Stock x = stockAdapter.getItem(0);
+                stockInfoTV.append(x.toString()); //by default show the top of my list.
             } catch (Exception e){
 
             }
             stockLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    stockInfoTV.setText(String.valueOf(id)); //and another pertinent information
+                Stock x = stockAdapter.getItem(position);
+                    stockInfoTV.setText("Powered by Yahoo Finance");
+                    stockInfoTV.append(x.toString());   //edit so it shows full
                     Log.d("test stock id", id + " ");
-
                 }
             });
         }

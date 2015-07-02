@@ -509,33 +509,51 @@
             android:orientation="vertical"
             android:weightSum="1">
 
-         <Button
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:id="@+id/viewButton"
-             android:text="STOCKS"/>
 
-        <ListView android:layout_width="match_parent"
-            android:layout_height="76dp"
-            android:id="@+id/stockLV_id"
-            android:layout_weight="0.47" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2"
+            android:orientation="horizontal">
+
+        <ListView android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/stockLV_id" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/stockInfo_id"
+                android:textColor="@color/material_blue_grey_800"
+                android:text="Powered by Yahoo Finance"
+                android:textAppearance="?android:attr/textAppearanceListItemSmall"
+                android:gravity="center_vertical"
+                android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
+                android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+                android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+                android:minHeight="?android:attr/listPreferredItemHeightSmall"
+                android:paddingRight="?android:attr/listPreferredItemPaddingRight"
+                android:paddingTop="10dp"
+                android:background="#037bacff"/>
+        </LinearLayout>
+
 
             <HorizontalScrollView
-
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.66"
             android:fillViewport="false"
             android:id="@+id/horizSV">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/stockInfo_id"
-                android:background="#037bacff"/>
+
 
             </HorizontalScrollView>
-
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/viewButton"
+                android:text="Customize Stocks"/>
 
         </LinearLayout>
 
@@ -568,5 +586,9 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></RelativeLayout>
 
 </LinearLayout>

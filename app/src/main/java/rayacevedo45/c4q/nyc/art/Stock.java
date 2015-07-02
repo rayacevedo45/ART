@@ -21,10 +21,39 @@ public class Stock {
       private String daysHigh = "";
         private String yearLow = "";
         private String YearHigh = "";
+    private String volume = "";
+    private String mktCap = "";
+
+    public String getAvgDailyVolume() {
+        return avgDailyVolume;
+    }
+
+    public void setAvgDailyVolume(String avgDailyVolume) {
+        this.avgDailyVolume = avgDailyVolume;
+    }
+
+    private String avgDailyVolume = "";
+
+    public String getVolume() {
+        return volume;
+    }
+
+    public void setVolume(String volume) {
+        this.volume = volume;
+    }
+
+
+    public String getMktCap() {
+        return mktCap;
+    }
+
+    public void setMktCap(String mktCap) {
+        this.mktCap = mktCap;
+    }
 
 
 
-    private String mktCap;
+
 
     public Stock( String id, String lastTradePriceOnly, String yearLow, String daysHigh, String daysLow, String yearHigh, String daysRange, String change) {
         this.id = id;
@@ -34,7 +63,16 @@ public class Stock {
         this.daysLow = daysLow;
         this.YearHigh = yearHigh;
         this.DaysRange = daysRange;
-        this.change = change;
+        this.change                         = change;
+    }
+
+    public Stock(String id, String daysHigh, String daysLow, String yearHigh, String yearLow,String  marketcAP, String lastTradePrice) {
+        this.id = id;
+        this.daysHigh = daysHigh;
+        this.daysLow = daysLow;
+        this.YearHigh = yearHigh;
+        this.yearLow = yearLow;
+        this.mktCap = marketcAP;
     }
 
     public Stock(String id, String daysHigh){
@@ -120,7 +158,17 @@ public class Stock {
     @Override
     public String toString() {
 //        return (this.getId() + "     " + "+" + this.getDaysHigh());
-        return(this.getId());
+        return("\n\n" + this.getId() + "\n"
+        + "\nHigh: " + this.getDaysHigh()
+        + "\nLow: " + this.getDaysLow()
+        + "\n52w High: " + this.getYearHigh()
+        + "\n52w Low: " + this.getYearLow()
+        + "\nMkt Cap: " + this.getMktCap()  + "\nAvg Volume:" + this.getAvgDailyVolume() +
+        "\n");
+
+
+
+
     }
 
 
