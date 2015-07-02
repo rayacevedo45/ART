@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Random;
 
 
 public class Cards extends ActionBarActivity {
@@ -69,6 +70,7 @@ public class Cards extends ActionBarActivity {
     View weather_layout, sevenDayView;
     ArrayList<String> daysofWeek;
     ArrayList<TextView> daysofWeekTextViews, datesofWeekTextViews;
+    ArrayList<Integer> shortImageList, fullImageList;
     ListView todoList;
     ImageView todayWeather, forecast1, forecast2, forecast3, forecast4, forecast5, forecast6;
     ;
@@ -121,6 +123,7 @@ public class Cards extends ActionBarActivity {
                 }
             }
         });
+        
 
         parser = new JSONParser();
 
@@ -775,7 +778,7 @@ public class Cards extends ActionBarActivity {
             }
         } else {
             if (!night) {
-                image.setBackgroundResource(R.drawable.night_clear);
+                image.setBackgroundResource(R.drawable.day_sunny);
             } else {
                 //image.setBackgroundResource(R.drawable.day_sunny);
                 image.setBackgroundResource(R.drawable.night_clear);
@@ -792,7 +795,7 @@ public class Cards extends ActionBarActivity {
             image.setBackgroundResource(R.drawable.day_snow);
         } else {
             //image.setBackgroundResource(R.drawable.day_sunny);
-            image.setBackgroundResource(R.drawable.night_clear);
+            image.setBackgroundResource(R.drawable.day_sunny);
         }
     }
 
@@ -886,89 +889,39 @@ public class Cards extends ActionBarActivity {
 
             //create hashmap to hold results
             HashMap JSONresults = new HashMap();
+            /***** Parse the JSON ******/
+        // You can consolidate all of your parsing code into the following code.
+        // Let me know if you have questions or run into any issues.
 
             try {
+                JSONArray days = sevenDayForecastObject.getJSONArray("list");
 
-                //For seven day forecast information: get temps and descriptions
-                JSONArray sevenDay = sevenDayForecastObject.getJSONArray("list");
-                //day one
-                JSONObject dayObject = sevenDay.getJSONObject(1);
-                JSONObject temp = dayObject.getJSONObject("temp");
-                temp1 = temp.getString("min").substring(0, 2) + "°/" + temp.getString("max").substring(0, 2) + "°";
-                JSONArray sevenDayweather = dayObject.getJSONArray("weather");
-                JSONObject sevenDaydescription = sevenDayweather.getJSONObject(0);
-                descrip1 = sevenDaydescription.getString("description");
-//                //day two
-                JSONArray sevenDay2 = sevenDayForecastObject.getJSONArray("list");
-                JSONObject dayObject2 = sevenDay2.getJSONObject(2);
-                JSONObject temp22 = dayObject2.getJSONObject("temp");
-                temp2 = temp22.getString("min").substring(0, 2) + "/" + temp.getString("max").substring(0, 2);
-                JSONArray sevenDayweather2 = dayObject.getJSONArray("weather");
-                JSONObject sevenDaydescription2 = sevenDayweather2.getJSONObject(0);
-                descrip2 = sevenDaydescription2.getString("description");
-                //day three
-                JSONObject dayObject3 = sevenDay.getJSONObject(3);
-                JSONObject temp33 = dayObject3.getJSONObject("temp");
-                temp3 = temp33.getString("min").substring(0, 2) + "/" + temp.getString("max").substring(0, 2);
-                JSONArray sevenDayweather3 = dayObject.getJSONArray("weather");
-                JSONObject sevenDaydescription3 = sevenDayweather3.getJSONObject(0);
-                descrip3 = sevenDaydescription3.getString("description");
-                //day four
-                JSONObject dayObject4 = sevenDay.getJSONObject(4);
-                JSONObject temp44 = dayObject4.getJSONObject("temp");
-                temp4 = temp44.getString("min").substring(0, 2) + "/" + temp.getString("max").substring(0, 2);
-                JSONArray sevenDayweather4 = dayObject.getJSONArray("weather");
-                JSONObject sevenDaydescription4 = sevenDayweather4.getJSONObject(0);
-                descrip4 = sevenDaydescription4.getString("description");
-                //day five
-                JSONObject dayObject5 = sevenDay.getJSONObject(5);
-                JSONObject temp55 = dayObject5.getJSONObject("temp");
-                temp5 = temp55.getString("min").substring(0, 2) + "/" + temp.getString("max").substring(0, 2);
-                JSONArray sevenDayweather5 = dayObject.getJSONArray("weather");
-                JSONObject sevenDaydescription5 = sevenDayweather5.getJSONObject(0);
-                descrip5 = sevenDaydescription5.getString("description");
-                //day six
-                JSONObject dayObject6 = sevenDay.getJSONObject(6);
-                JSONObject temp66 = dayObject6.getJSONObject("temp");
-                temp6 = temp.getString("min").substring(0, 2) + "/" + temp.getString("max").substring(0, 2);
-                JSONArray sevenDayweather6 = dayObject.getJSONArray("weather");
-                JSONObject sevenDaydescription6 = sevenDayweather6.getJSONObject(0);
-                descrip6 = sevenDaydescription6.getString("description");
-            } catch (Exception e) {
+                for (int i = 1; i < days.length(); i++) {
+                    JSONObject day = days.getJSONObject(i);
 
+                    // Parse temperature
+                    JSONObject temperature = day.getJSONObject("temp");
+                    double min = temperature.getDouble("min");
+                    double max = temperature.getDouble("max");
+                    Log.d("Seven Day", "Day: " + i + " min: " + min + " max " + max);
+                    //convert tempertures into one string
+                    String newTemp = Double.toString(min).substring(0, 2) + "/" + Double.toString(max).substring(0, 2);
+
+                    // Parse weather
+                    JSONArray weathers = day.getJSONArray("weather");
+                    // Only care about the first weather description, otherwise we can loop through this array
+                    JSONObject weather = weathers.getJSONObject(0);
+                    String description = weather.getString("description");
+                    Log.d("Seven Day", "Weather description: " + description);
+
+                    // Store this information in your HashMap.
+                    // I would make the keys something like:
+                    JSONresults.put("day_" + i + "_temp", newTemp);
+                    JSONresults.put("day_" + i + "_desc", description);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-//              FOR LOOP VERSION - DIDN'T WORK WHEN I TRIED
-//                for (int i = 1; i < 7; i++) {
-//                    JSONObject dayObject = sevenDay.getJSONObject(i);
-//                    JSONObject temp = dayObject.getJSONObject("temp");
-//                    tempertures.add(temp.getString("min").substring(0, 2) + "/" + temp.getString("max").substring(0, 2));
-//                    JSONArray sevenDayweather = dayObject.getJSONArray("weather");
-//                    JSONObject sevenDaydescription = sevenDayweather.getJSONObject(0);
-//                    descriptions.add(sevenDaydescription.getString("description"));
-//                }
-
-            JSONresults.put("dayOneTemp", temp1);
-            JSONresults.put("dayTwoTemp", temp2);
-            JSONresults.put("dayThreeTemp", temp3);
-            JSONresults.put("dayFourTemp", temp4);
-            JSONresults.put("dayFiveTemp", temp5);
-            JSONresults.put("daySixTemp", temp6);
-            JSONresults.put("description1", descrip1);
-            JSONresults.put("description2", descrip2);
-            JSONresults.put("description3", descrip3);
-            JSONresults.put("description4", descrip4);
-            JSONresults.put("description5", descrip5);
-            JSONresults.put("description6", descrip6);
-
-//              FOR LOOP VERSION
-//            JSONresults.put("temp0", tempertures.get(0));
-//            JSONresults.put("temp1", tempertures.get(1));
-//            JSONresults.put("temp2", tempertures.get(2));
-//            JSONresults.put("temp3", tempertures.get(3));
-//            JSONresults.put("temp4", tempertures.get(4));
-//            JSONresults.put("temp5", tempertures.get(5));
-
-
             return JSONresults;
         }
 
@@ -978,19 +931,19 @@ public class Cards extends ActionBarActivity {
                 //display correct forecast icon for main forecast image view
                 //setForecastImage(weatherDescription, todayWeather);
 
-                temp_1.setText(s.get("dayOneTemp").toString());
-                temp_2.setText(s.get("dayOneTwo").toString());
-                temp_3.setText(s.get("dayOneThree").toString());
-                temp_4.setText(s.get("dayOneFour").toString());
-                temp_5.setText(s.get("dayOneFive").toString());
-                temp_6.setText(s.get("dayOneSix").toString());
+                temp_1.setText(s.get("day_1_temp").toString());
+                temp_2.setText(s.get("day_2_temp").toString());
+                temp_3.setText(s.get("day_3_temp").toString());
+                temp_4.setText(s.get("day_4_temp").toString());
+                temp_5.setText(s.get("day_5_temp").toString());
+                temp_6.setText(s.get("day_6_temp").toString());
 //
-                setSevenDayImage((s.get("description1").toString()), forecast1);
-                setSevenDayImage((s.get("description2").toString()), forecast2);
-                setSevenDayImage((s.get("description3").toString()), forecast3);
-                setSevenDayImage((s.get("description4").toString()), forecast4);
-                setSevenDayImage((s.get("description5").toString()), forecast5);
-                setSevenDayImage((s.get("description6").toString()), forecast6);
+                setSevenDayImage((s.get("day_1_desc").toString()), forecast1);
+                setSevenDayImage((s.get("day_2_desc").toString()), forecast2);
+                setSevenDayImage((s.get("day_3_desc").toString()), forecast3);
+                setSevenDayImage((s.get("day_4_desc").toString()), forecast4);
+                setSevenDayImage((s.get("day_5_desc").toString()), forecast5);
+                setSevenDayImage((s.get("day_6_desc").toString()), forecast6);
             } catch (Exception e) {
 
             }
