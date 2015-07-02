@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
@@ -66,6 +67,8 @@ public class Cards extends ActionBarActivity {
     private ArrayAdapter basicAdapter;
     private ListView stockLV;
     private TextView stockInfoTV;
+    private ArrayList mStocks;
+    private StockAdapter stockAdapter;
 
 
 
@@ -148,6 +151,7 @@ public class Cards extends ActionBarActivity {
     public void initializeViewsAndValues(){
         stockInfoTV = (TextView) findViewById(R.id.stockInfo_id);
         mNotes = NotePad.get(getApplicationContext()).getNotes();
+        mStocks = new ArrayList<Stock>();
         welcome = (TextView) findViewById(R.id.welcomeTV);
         horoscopeCV = (CardView) findViewById(R.id.card_view2);
         horoscopeTV = (TextView) findViewById(R.id.horoscopeTVID);
@@ -707,36 +711,41 @@ public class Cards extends ActionBarActivity {
     }
 
     public class AsyncStocks extends AsyncTask<Void, Void, ArrayList> {
-        ArrayList<Stock> stockResults;
+        String stockAPI_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quote%20where%20symbol%20in%20";
+
+
+
         @Override
         protected ArrayList doInBackground(Void... params) {
             try {
-                JSONObject dailyStockObject = parser.parse("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quote%20where%20symbol%20in%20(%22YHOO%22%2C%22AAPL%22%2C%22GOOG%22%2C%22MSFT%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=");
+                String stockParams = "(%22YHOO%22%2C%22AAPL%22%2C%22GOOG%22%2C%22MSFT%22)";
+                String stockFormat = "&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=";
+                JSONObject dailyStockObject = parser.parse(stockAPI_URL + stockParams + stockFormat );
                 JSONObject dailyStocksQuery = dailyStockObject.getJSONObject("query");
                 JSONObject resultsJSONObject = dailyStocksQuery.getJSONObject("results");
                 JSONArray stocksJSONArray = resultsJSONObject.getJSONArray("quote");
 
-                stockResults = new ArrayList<Stock>();
                 for (int i = 0; i < stocksJSONArray.length(); i++) {
                     JSONObject x = (JSONObject) stocksJSONArray.get(i);
                     String caption = x.getString("symbol");
-                    String dayshigh = x.getString("DaysHigh");
-                    String daysLow = x.getString("DaysLow");
                     String daysHigh = x.getString("DaysHigh");
+                    String daysLow = x.getString("DaysLow");
                     String yearLow = x.getString("YearLow");
                     String yearHigh = x.getString("YearHigh");
                     String marketcAP = x.getString("MarketCapitalization");
                     String lastTradePrice = x.getString("LastTradePriceOnly");
 
-                    Stock y = new Stock(caption, dayshigh);
 
-                    stockResults.add(y);
+                    //( String id, String lastTradePriceOnly, String yearLow, String daysHigh, String daysLow, String yearHigh, String daysRange, String change)
+                    Stock y = new Stock(caption, daysHigh, daysLow, yearHigh, yearLow, marketcAP, lastTradePrice);
+
+                    mStocks.add(y);
                 }
             } catch (Exception e){
 
             }
 
-            return stockResults;
+            return mStocks;
         }
 
         @Override
@@ -747,22 +756,57 @@ public class Cards extends ActionBarActivity {
             }
 
             try {
-                ArrayAdapter stockAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, stockArrayList);
+                //stockLV.setAdapter(new ArrayAdapter<Stock>(getApplicationContext(), android.R.layout.simple_list_item_1, mStocks));
+                stockAdapter = new StockAdapter(stockArrayList);
                 stockLV.setAdapter(stockAdapter);
+                stockInfoTV.setText("Powered by Yahoo Finance");
+                Stock x = stockAdapter.getItem(0);
+                stockInfoTV.append(x.toString()); //by default show the top of my list.
             } catch (Exception e){
 
             }
             stockLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    stockInfoTV.setText(String.valueOf(id)); //and another pertinent information
+                    Stock x = stockAdapter.getItem(position);
+                    stockInfoTV.setText("Powered by Yahoo Finance");
+                    stockInfoTV.append(x.toString());   //edit so it shows full
                     Log.d("test stock id", id + " ");
-
                 }
             });
         }
 
     }
-}
 
+    public class StockAdapter extends ArrayAdapter<Stock> {
+
+        public int getCount() {
+            return mStocks.size();
+        }
+
+        @Override
+        public Stock getItem(int position) {
+            return (Stock)mStocks.get(position);
+        }
+
+
+        public StockAdapter(ArrayList<Stock> stocks) {
+            super(getApplicationContext(), 0, stocks);
+        }
+
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = getLayoutInflater().inflate(R.layout.list_item_stock, parent, false); //try list_item_note nxt
+            }
+            Stock c = getItem(position);
+
+
+            TextView stockTitle = (TextView) convertView.findViewById(R.id.stockViewText);
+            stockTitle.setText(c.getId());
+
+            return convertView;
+        }
+    }
+}
