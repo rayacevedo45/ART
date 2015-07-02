@@ -26,6 +26,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -126,6 +127,20 @@ public class Cards extends ActionBarActivity {
 
 
         parser = new JSONParser();
+
+
+        final CheckBox fbCheck = (CheckBox) findViewById(R.id.fbStockButton_id);
+        CheckBox twitcheck = (CheckBox) findViewById(R.id.twitstockbutton_id);
+        CheckBox corningcheck = (CheckBox) findViewById(R.id.corningStockButton_id);
+        CheckBox teslacheck = (CheckBox) findViewById(R.id.teslaStockButton_id);
+        fbCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(fbCheck.isChecked()){
+                 //
+                }
+            }
+        });
 
         Handler handler = new Handler();
         //handler.postDelayed()
@@ -588,7 +603,7 @@ public class Cards extends ActionBarActivity {
                 } else {
                     dailyHoroscopeString3 = getString(R.string.horoscopeDefault);
                 }
-                //horoscopeTV.setText(userSign + " daily horoscope \n" + dailyHoroscopeString3);
+                horoscopeTV.setText(userSign + " daily horoscope \n" + dailyHoroscopeString3);
                 Log.d("@#@", dailyHoroscopeString3);
 
                 horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + "     " + dailyHoroscopeString3);
@@ -596,7 +611,6 @@ public class Cards extends ActionBarActivity {
                 linkS = s.get("link").toString();
                 newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS);
 
-                horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + "     " + s.get("horoscopeString"));
 
 
                 linkS = s.get("link").toString();
@@ -706,7 +720,7 @@ public class Cards extends ActionBarActivity {
                 if (stockArrayList != null) {
                     stockAdapter = new StockAdapter(stockArrayList);
                     stockLV.setAdapter(stockAdapter);
-                    stockInfoTV.setText("Powered by Yahoo Finance");
+                    stockInfoTV.setText("Powered by Yahoo Finance" + "\nConnect to the Internet");
                     Stock x = stockAdapter.getItem(0);
                     stockInfoTV.append(x.toString()); //by default show the top of my list.
                 } else {
@@ -715,8 +729,8 @@ public class Cards extends ActionBarActivity {
                     stockArrayList.add(new Stock("AAPL"));
                     stockArrayList.add(new Stock("GOOG"));
                     stockArrayList.add(new Stock("MSFT"));
-                    stockAdapter = new StockAdapter(default_stockArrayList);
-                    stockLV.setAdapter(stockAdapter);
+                    StockAdapter defaultstockAdapter = new StockAdapter(default_stockArrayList);
+                    stockLV.setAdapter(defaultstockAdapter);
                 }
 
 
@@ -887,17 +901,21 @@ public class Cards extends ActionBarActivity {
 
             //parse urls into json objects
             //determine which APIs to use depending on celsius boolean and user city
-            city = city.replace(" ", "%20");
-            if (degreeS.equals("F")) {
-                sevenDayForecast = "http://api.openweathermap.org/data/2.5/forecast/daily?q=" + city + ",US&cnt=7&units=imperial";
+            try {
+                city = city.replace(" ", "%20");
+                if (degreeS.equals("F")) {
+                    sevenDayForecast = "http://api.openweathermap.org/data/2.5/forecast/daily?q=" + city + ",US&cnt=7&units=imperial";
 
-            } else {
-                sevenDayForecast = "http://api.openweathermap.org/data/2.5/forecast/daily?q=" + city + ",US&cnt=7&units=metric";
+                } else {
+                    sevenDayForecast = "http://api.openweathermap.org/data/2.5/forecast/daily?q=" + city + ",US&cnt=7&units=metric";
+                }
+
+                //determine which APIs to use depending on celsius boolean
+                weatherAPIObject = parser.parse(weatherAPI);
+
+            } catch(Exception e){
+
             }
-
-            //determine which APIs to use depending on celsius boolean
-            weatherAPIObject = parser.parse(weatherAPI);
-            sevenDayForecastObject = parser.parse(sevenDayForecast);
 
             //create hashmap to hold results
             HashMap JSONresults = new HashMap();
@@ -906,31 +924,36 @@ public class Cards extends ActionBarActivity {
             // Let me know if you have questions or run into any issues.
 
             try {
-                JSONArray days = sevenDayForecastObject.getJSONArray("list");
+                sevenDayForecastObject = parser.parse(sevenDayForecast);
+                if (sevenDayForecast != null) {
+                    JSONArray days = sevenDayForecastObject.getJSONArray("list");
 
-                for (int i = 1; i < days.length(); i++) {
-                    JSONObject day = days.getJSONObject(i);
+                    for (int i = 1; i < days.length(); i++) {
+                        JSONObject day = days.getJSONObject(i);
 
-                    // Parse temperature
-                    JSONObject temperature = day.getJSONObject("temp");
-                    double min = temperature.getDouble("min");
-                    double max = temperature.getDouble("max");
-                    Log.d("Seven Day", "Day: " + i + " min: " + min + " max " + max);
-                    //convert tempertures into one string
-                    String newTemp = Double.toString(min).substring(0, 2) + "/" + Double.toString(max).substring(0, 2);
+                        // Parse temperature
+                        JSONObject temperature = day.getJSONObject("temp");
+                        double min = temperature.getDouble("min");
+                        double max = temperature.getDouble("max");
+                        Log.d("Seven Day", "Day: " + i + " min: " + min + " max " + max);
+                        //convert tempertures into one string
+                        String newTemp = Double.toString(min).substring(0, 2) + "/" + Double.toString(max).substring(0, 2);
 
-                    // Parse weather
-                    JSONArray weathers = day.getJSONArray("weather");
-                    // Only care about the first weather description, otherwise we can loop through this array
-                    JSONObject weather = weathers.getJSONObject(0);
-                    String description = weather.getString("description");
-                    Log.d("Seven Day", "Weather description: " + description);
+                        // Parse weather
+                        JSONArray weathers = day.getJSONArray("weather");
+                        // Only care about the first weather description, otherwise we can loop through this array
+                        JSONObject weather = weathers.getJSONObject(0);
+                        String description = weather.getString("description");
+                        Log.d("Seven Day", "Weather description: " + description);
 
-                    // Store this information in your HashMap.
-                    // I would make the keys something like:
-                    JSONresults.put("day_" + i + "_temp", newTemp);
-                    JSONresults.put("day_" + i + "_desc", description);
+                        // Store this information in your HashMap.
+                        // I would make the keys something like:
+                        JSONresults.put("day_" + i + "_temp", newTemp);
+                        JSONresults.put("day_" + i + "_desc", description);
+                    }
                 }
+
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
