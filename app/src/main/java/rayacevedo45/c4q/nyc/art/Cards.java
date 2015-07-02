@@ -53,24 +53,25 @@ import java.util.HashMap;
 
 public class Cards extends ActionBarActivity {
 
-    TextView date,time, location, temp, amPm, day1, day2, day3, day4, day5, day6, date1, date2, date3, date4, date5, date6, newsTV, newsTV2;
-    private String weatherAPI, sevenDayForecast, dateStr, city, tempStr, amPmStr;
-    TextView welcome,horoscopeTV;
-    private String name,birthdayS,zipcodeS,userSign,timeFormatS,degreeS;
+    TextView date, time, location, temp, amPm, day1, day2, day3, day4, day5, day6, date1, date2, date3, date4, date5, date6, newsTV, newsTV2, temp_1, temp_2, temp_3, temp_4, temp_5, temp_6;
+    private String weatherAPI, sevenDayForecast, dateStr, city, tempStr, amPmStr, temp1, temp2, temp3, temp4, temp5, temp6, descrip1, descrip2, descrip3, descrip4, descrip5, descrip6;
+    TextView welcome, horoscopeTV;
+    private String name, birthdayS, zipcodeS, userSign, timeFormatS, degreeS, weatherDescription;
     private JSONParser parser;
     private JSONObject dailyHoroscopeObject, weatherAPIObject, sevenDayForecastObject;
     private String dailyHoroscopeString, linkS, abstractS;
     private double currentTemp;
-    boolean military, celsius;
+    boolean night;
     CardView horoscopeCV, weatherCard, cardView4, stocksCV, topCV;
     LinearLayout top;
     CalendarView cv;
     Calendar rightNow;
     View weather_layout, sevenDayView;
-    ArrayList <String> daysofWeek;
-    ArrayList<TextView> daysofWeekTextViews;
+    ArrayList<String> daysofWeek;
+    ArrayList<TextView> daysofWeekTextViews, datesofWeekTextViews;
     ListView todoList;
-    ImageView imageView;
+    ImageView todayWeather, forecast1, forecast2, forecast3, forecast4, forecast5, forecast6;
+    ;
     private ArrayList mNotes;
     private ArrayAdapter basicAdapter;
     private ListView stockLV;
@@ -80,12 +81,8 @@ public class Cards extends ActionBarActivity {
     private String stockParams;
 
 
-
-
-
 //    public static final String MyPREFERENCES = "MyPrefs" ;
 //    SharedPreferences sharedpreferences;
-
 
 
     public static final String[] CARDS = {"To-Do List", "Horoscope", "Weather", "Stocks"};
@@ -99,7 +96,10 @@ public class Cards extends ActionBarActivity {
         AsyncTime getDailyHoroscope = new AsyncTime();
         getDailyHoroscope.execute();
 
-
+        AsyncCurrentWeather getTodayWeather = new AsyncCurrentWeather();
+        getTodayWeather.execute();
+        AsyncSevenDayWeather getSevenDayWeather = new AsyncSevenDayWeather();
+        getSevenDayWeather.execute();
 
 
         AsyncStocks getStocks = new AsyncStocks();
@@ -131,7 +131,7 @@ public class Cards extends ActionBarActivity {
             @Override
             public void run() {
                 NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                Notification.Builder builder = new  Notification.Builder(Cards.this);
+                Notification.Builder builder = new Notification.Builder(Cards.this);
 
 
                 builder.setContentTitle("notification");
@@ -148,7 +148,7 @@ public class Cards extends ActionBarActivity {
                 nm.notify(1, notification);
             }
         };
-        handler.postDelayed(runnable, 60000*4);
+        handler.postDelayed(runnable, 60000 * 4);
 
 
         //can set conditions that this loads the screen for
@@ -185,7 +185,7 @@ public class Cards extends ActionBarActivity {
     }
 
 
-    public void initializeViewsAndValues(){
+    public void initializeViewsAndValues() {
         stockInfoTV = (TextView) findViewById(R.id.stockInfo_id);
         mNotes = NotePad.get(getApplicationContext()).getNotes();
         mStocks = new ArrayList<Stock>();
@@ -212,11 +212,24 @@ public class Cards extends ActionBarActivity {
         date4 = (TextView) findViewById(R.id.dateFour);
         date5 = (TextView) findViewById(R.id.dateFive);
         date6 = (TextView) findViewById(R.id.dateSix);
+        temp_1 = (TextView) findViewById(R.id.dayoneTemp);
+        temp_2 = (TextView) findViewById(R.id.daytwoTemp);
+        temp_3 = (TextView) findViewById(R.id.daythreeTemp);
+        temp_4 = (TextView) findViewById(R.id.dayfourTemp);
+        temp_5 = (TextView) findViewById(R.id.dayfiveTemp);
+        temp_6 = (TextView) findViewById(R.id.daysixTemp);
+        forecast1 = (ImageView) findViewById(R.id.dayone_icon);
+        forecast2 = (ImageView) findViewById(R.id.daytwo_icon);
+        forecast3 = (ImageView) findViewById(R.id.daythree_icon);
+        forecast4 = (ImageView) findViewById(R.id.dayfour_icon);
+        forecast5 = (ImageView) findViewById(R.id.dayfive_icon);
+        forecast6 = (ImageView) findViewById(R.id.daysix_icon);
         todoList = (ListView) findViewById(R.id.todoListView);
         newsTV = (TextView) findViewById(R.id.newTVID);
         cardView4 = (CardView) findViewById(R.id.card_view4);
         stocksCV = (CardView) findViewById(R.id.card_viewStocks);
         topCV = (CardView) findViewById(R.id.topID);
+        todayWeather = (ImageView) findViewById(R.id.main_forecast);
 
         stockLV = (ListView) findViewById(R.id.stockLV_id);
 
@@ -238,11 +251,11 @@ public class Cards extends ActionBarActivity {
         name = settings.getString("name", "");
         birthdayS = settings.getString("bday", "");
         zipcodeS = settings.getString("zipcode", "");
-        Log.d("!!!",zipcodeS);
+        Log.d("!!!", zipcodeS);
         timeFormatS = settings.getString("timeformat", "");
-        Log.d("@@@",timeFormatS);
+        Log.d("@@@", timeFormatS);
         degreeS = settings.getString("degree", "");
-        Log.d("###",degreeS);
+        Log.d("###", degreeS);
 
 
         Bundle extras = getIntent().getExtras();
@@ -251,8 +264,6 @@ public class Cards extends ActionBarActivity {
 
         findUserSign();
         intializeDateTime();
-
-
 
 
         topCV.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
@@ -273,15 +284,13 @@ public class Cards extends ActionBarActivity {
 //                stocksCV.setVisibility(View.GONE);
 //            }
 //        });
-        horoscopeCV.setOnTouchListener(new OnSwipeTouchListener(Cards.this)
-        {
+        horoscopeCV.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
             @Override
             public void onSwipeLeft() {
                 horoscopeCV.setVisibility(View.GONE);
             }
         });
-        cardView4.setOnTouchListener(new OnSwipeTouchListener(Cards.this)
-        {
+        cardView4.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
             @Override
             public void onSwipeLeft() {
                 cardView4.setVisibility(View.GONE);
@@ -289,7 +298,7 @@ public class Cards extends ActionBarActivity {
         });
     }
 
-    public void SetSevenDayInfo () {
+    public void SetSevenDayInfo() {
 
     }
 
@@ -382,6 +391,14 @@ public class Cards extends ActionBarActivity {
         daysofWeekTextViews.add(day5);
         daysofWeekTextViews.add(day6);
 
+        datesofWeekTextViews = new ArrayList<TextView>();
+        datesofWeekTextViews.add(date1);
+        datesofWeekTextViews.add(date2);
+        datesofWeekTextViews.add(date3);
+        datesofWeekTextViews.add(date4);
+        datesofWeekTextViews.add(date5);
+        datesofWeekTextViews.add(date6);
+
 
         if (dayofweek == 1) {
             dateStr = daysofWeek.get(0) + ", ";
@@ -427,13 +444,24 @@ public class Cards extends ActionBarActivity {
             dateStr += "December ";
         }
 
-        //iterate through textviews of seven day forecast DAYS and put in correct day of week
+        //iterate through textviews of seven day forecast DAYS and put in correct day of week and date
         for (int i = 0; i < 6; i++) {
             if (dayofweek == 7) {
-                dayofweek=0;
+                dayofweek = 0;
             }
             daysofWeekTextViews.get(i).setText(daysofWeek.get(dayofweek));
             dayofweek++;
+        }
+
+        for (int i = 0; i < 6; i++) {
+            int m = 1;
+            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd");
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DATE, m);
+            String formattedDate = sdf.format(cal.getTime());
+            datesofWeekTextViews.get(i).setText(formattedDate);
+            dayofweek++;
+            m++;
         }
 
 
@@ -441,9 +469,13 @@ public class Cards extends ActionBarActivity {
         date.setText(dateStr);
 
         //format the time depending on military boolean
-        if (military) {
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-            time.setText(sdf.format(rightNow.getTime()));
+        if (timeFormatS.equals("12hr time format")) {
+            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
+            if (sdf.format(rightNow.getTime()).startsWith("0")) {
+                time.setText(sdf.format(rightNow.getTime()).substring(1));
+            } else {
+                time.setText(sdf.format(rightNow.getTime()));
+            }
             int hours = rightNow.get(Calendar.HOUR);
             int AM_orPM = rightNow.get(Calendar.AM_PM);
             if (hours < 12) {
@@ -457,19 +489,25 @@ public class Cards extends ActionBarActivity {
 
             }
             amPm.setText(amPmStr);
-        }
-        else {
+        } else {
             SimpleDateFormat sdf = new SimpleDateFormat("kk:mm");
             time.setText(sdf.format(rightNow.getTime()));
             amPm.setText("");
+        }
+
+        //determine if its night or day
+        Calendar cal = Calendar.getInstance();
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        if (hour < 6 || hour > 18) {
+            night = true;
+        } else {
+            night = false;
         }
     }
 
 
     public class AsyncTime extends AsyncTask<Void, Void, HashMap> {
         String caption, link;
-
-
 
 
         //public class AsyncTime extends AsyncTask<Void, Void, String> {
@@ -479,38 +517,21 @@ public class Cards extends ActionBarActivity {
 
             //parse urls into json objects
 
-            //determine which APIs to use depending on celsius boolean
-            if (!celsius) {
-                weatherAPI = "http://api.openweathermap.org/data/2.5/weather?zip=" + zipcodeS + ",us&units=imperial";
-                sevenDayForecast = "http://api.openweathermap.org/data/2.5/forecast/daily?q=" + city + ",US&cnt=7&units==imperial";
-            }
-            else {
-                weatherAPI = "http://api.openweathermap.org/data/2.5/weather?zip=" + zipcodeS + ",us&units=metric";
-                sevenDayForecast = "http://api.openweathermap.org/data/2.5/forecast/daily?q=" + city + ",US&cnt=7&units==metric";
-            }
             Date date = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
             String sdfS = (sdf.format(date));
-            Log.d("!!!",sdfS);
+            Log.d("!!!", sdfS);
             String month2 = sdfS.substring(5, 7);
             String day2 = sdfS.substring(8, 10);
-
 
 
             //parse urls into json objects
             //http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2008-01-01
             // http://widgets.fabulously40.com/horoscope.json?sign=aries&date=2014-12-30
             String horoscopeAPISite = "http://widgets.fabulously40.com/horoscope.json?sign=" + userSign + "&date=2010-" + month2 + "-" + day2;
-            Log.d("+++",horoscopeAPISite);
+            Log.d("+++", horoscopeAPISite);
 
             //determine which APIs to use depending on celsius boolean
-
-
-
-
-            weatherAPIObject = parser.parse(weatherAPI);
-            sevenDayForecastObject = parser.parse(sevenDayForecast);
-
 
             //create hashmap to hold results
             HashMap JSONresults = new HashMap();
@@ -522,15 +543,6 @@ public class Cards extends ActionBarActivity {
                 dailyHoroscopeString = dailyHoroscope.getString("horoscope");
                 Log.d("test horoscope", dailyHoroscopeString);
 
-                city = weatherAPIObject.getString("name");
-                JSONObject main = weatherAPIObject.getJSONObject("main");
-                currentTemp = main.getDouble("temp");
-
-                if (!celsius) {
-                    tempStr = String.valueOf(currentTemp).split("\\.")[0] + "°F"; }
-                else {
-                    tempStr = String.valueOf(currentTemp).split("\\.")[0] + "°C";
-                }
                 //Ray - parsing nY TIMES URL
                 String timesUrl = "http://api.nytimes.com/svc/news/v3/content/all/all/720.json?limit=1&offset=1&api-key=6a53d7200f35783a967c577bd64357d5%3A14%3A72395287";
                 JSONObject newsJsonObject = parser.parse(timesUrl);
@@ -541,24 +553,21 @@ public class Cards extends ActionBarActivity {
                 link = firstItem.getString("url");
 
 
-            } catch (Exception e ){
+            } catch (Exception e) {
 
             }
 
             JSONresults.put("horoscopeString", dailyHoroscopeString);
 //            Log.d("{}|", dailyHoroscopeString);
-            JSONresults.put("currentTemp", tempStr);
-            JSONresults.put("userCity", city);
             JSONresults.put("caption", caption);
             JSONresults.put("link", link);
 
             return JSONresults;
         }
 
-        public void appendNewStockstoParam(String param){
+        public void appendNewStockstoParam(String param) {
             param = stockParams; //fixme
         }
-
 
 
         @Override
@@ -567,34 +576,31 @@ public class Cards extends ActionBarActivity {
             try {
                 String horoscopeString = "";
                 String dailyHoroscopeString3 = "";
-                if (s.get("horoscopeString").toString() != null){
-                   horoscopeString = s.get("horoscopeString").toString();
-                    Log.d("!@!",horoscopeString);
-                   dailyHoroscopeString3 = horoscopeString.replace("&apos;","\'");
+                if (s.get("horoscopeString").toString() != null) {
+                    horoscopeString = s.get("horoscopeString").toString();
+                    Log.d("!@!", horoscopeString);
+                    dailyHoroscopeString3 = horoscopeString.replace("&apos;", "\'");
 
 
                 } else {
                     dailyHoroscopeString3 = getString(R.string.horoscopeDefault);
                 }
                 //horoscopeTV.setText(userSign + " daily horoscope \n" + dailyHoroscopeString3);
-                Log.d("@#@",dailyHoroscopeString3);
-                location.setText(s.get("userCity").toString());
-                temp.setText(s.get("currentTemp").toString());
-
+                Log.d("@#@", dailyHoroscopeString3);
 
                 horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + "     " + dailyHoroscopeString3);
                 abstractS = "     " + s.get("caption");
                 linkS = s.get("link").toString();
-                newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS  );
+                newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS);
 
                 horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + "     " + s.get("horoscopeString"));
 
                 abstractS = "     " + s.get("caption");
                 linkS = s.get("link").toString();
-            newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS  );
+                newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS);
 
 
-            } catch(Exception e){
+            } catch (Exception e) {
 
             }
         }
@@ -648,10 +654,8 @@ public class Cards extends ActionBarActivity {
     }
 
 
-
     public class AsyncStocks extends AsyncTask<Void, Void, ArrayList> {
         String stockAPI_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quote%20where%20symbol%20in%20(%22";
-
 
 
         @Override
@@ -660,7 +664,7 @@ public class Cards extends ActionBarActivity {
                 //add new stocks to beginning of listview like so: "GLW%22%2C%22"
                 String stockParams = "YHOO%22%2C%22AAPL%22%2C%22GOOG%22%2C%22MSFT%22)";
                 String stockFormat = "&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=";
-                JSONObject dailyStockObject = parser.parse(stockAPI_URL + stockParams + stockFormat );
+                JSONObject dailyStockObject = parser.parse(stockAPI_URL + stockParams + stockFormat);
                 JSONObject dailyStocksQuery = dailyStockObject.getJSONObject("query");
                 JSONObject resultsJSONObject = dailyStocksQuery.getJSONObject("results");
                 JSONArray stocksJSONArray = resultsJSONObject.getJSONArray("quote");
@@ -681,7 +685,7 @@ public class Cards extends ActionBarActivity {
 
                     mStocks.add(y);
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
 
             }
 
@@ -689,9 +693,9 @@ public class Cards extends ActionBarActivity {
         }
 
         @Override
-        protected void onPostExecute(ArrayList s){
+        protected void onPostExecute(ArrayList s) {
             ArrayList<Stock> stockArrayList = new ArrayList<>();
-            for (int i = 0; i < s.size(); i++){
+            for (int i = 0; i < s.size(); i++) {
                 stockArrayList.add(new Stock(s.get(i).toString()));
             }
 
@@ -702,7 +706,7 @@ public class Cards extends ActionBarActivity {
                 stockInfoTV.setText("Powered by Yahoo Finance");
                 Stock x = stockAdapter.getItem(0);
                 stockInfoTV.append(x.toString()); //by default show the top of my list.
-            } catch (Exception e){
+            } catch (Exception e) {
 
             }
             stockLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -726,7 +730,7 @@ public class Cards extends ActionBarActivity {
 
         @Override
         public Stock getItem(int position) {
-            return (Stock)mStocks.get(position);
+            return (Stock) mStocks.get(position);
         }
 
 
@@ -747,6 +751,250 @@ public class Cards extends ActionBarActivity {
             stockTitle.setText(c.getId());
 
             return convertView;
+        }
+    }
+
+    public void setForecastImage(String description, ImageView image) {
+        if (description.contains("rain") || description.contains("drizzle")) {
+            if (!night) {
+                image.setBackgroundResource(R.drawable.night_rain);
+            } else {
+                image.setBackgroundResource(R.drawable.day_thunderstorm);
+            }
+        } else if (description.contains("thunderstorm")) {
+            if (!night) {
+                image.setBackgroundResource(R.drawable.night_thunder_storm);
+            } else {
+                image.setBackgroundResource(R.drawable.day_thunderstorm);
+            }
+        } else if (description.contains("snow") || description.contains("sleet")) {
+            if (!night) {
+                image.setBackgroundResource(R.drawable.day_snow);
+            } else {
+                image.setBackgroundResource(R.drawable.night_snow);
+            }
+        } else {
+            if (!night) {
+                image.setBackgroundResource(R.drawable.night_clear);
+            } else {
+                //image.setBackgroundResource(R.drawable.day_sunny);
+                image.setBackgroundResource(R.drawable.night_clear);
+            }
+        }
+    }
+
+    public void setSevenDayImage(String description, ImageView image) {
+        if (description.contains("rain") || description.contains("drizzle")) {
+            image.setBackgroundResource(R.drawable.day_thunderstorm);
+        } else if (description.contains("thunderstorm")) {
+            image.setBackgroundResource(R.drawable.day_thunderstorm);
+        } else if (description.contains("snow") || description.contains("sleet")) {
+            image.setBackgroundResource(R.drawable.day_snow);
+        } else {
+            //image.setBackgroundResource(R.drawable.day_sunny);
+            image.setBackgroundResource(R.drawable.night_clear);
+        }
+    }
+
+    public class AsyncCurrentWeather extends AsyncTask<Void, Void, HashMap> {
+
+        //public class AsyncTime extends AsyncTask<Void, Void, String> {
+
+        @Override
+        public HashMap doInBackground(Void... voids) {
+
+            //parse urls into json objects
+            //determine which APIs to use depending on celsius boolean
+            if (degreeS.equals("F")) {
+                weatherAPI = "http://api.openweathermap.org/data/2.5/weather?zip=" + zipcodeS + ",us&units=imperial";
+            } else {
+                weatherAPI = "http://api.openweathermap.org/data/2.5/weather?zip=" + zipcodeS + ",us&units=metric";
+            }
+
+            //determine which APIs to use depending on celsius boolean
+            weatherAPIObject = parser.parse(weatherAPI);
+            sevenDayForecastObject = parser.parse(sevenDayForecast);
+
+            //create hashmap to hold results
+            HashMap JSONresults = new HashMap();
+
+            try {
+
+                //For current information: get user city, current temp and current description
+                city = weatherAPIObject.getString("name");
+                //get description of weather from api
+                JSONArray weather = weatherAPIObject.getJSONArray("weather");
+                JSONObject description = weather.getJSONObject(0);
+                weatherDescription = description.getString("description");
+                //get current temperature from weather api adn format according to user preference
+                JSONObject main = weatherAPIObject.getJSONObject("main");
+                currentTemp = main.getDouble("temp");
+
+                if (degreeS.equals("F")) {
+                    tempStr = String.valueOf(currentTemp).split("\\.")[0] + "°F";
+                } else {
+                    tempStr = String.valueOf(currentTemp).split("\\.")[0] + "°C";
+                }
+                JSONresults.put("currentTemp", tempStr);
+                JSONresults.put("userCity", city);
+                JSONresults.put("weatherDescription", weatherDescription);
+            } catch (Exception e) {
+
+            }
+
+
+            return JSONresults;
+        }
+
+        @Override
+        public void onPostExecute(HashMap s) {
+            try {
+                location.setText(s.get("userCity").toString());
+                temp.setText(s.get("currentTemp").toString());
+
+                //display correct forecast icon for main forecast image view
+                setForecastImage(s.get("weatherDescription").toString(), todayWeather);
+                // setForecastImage("rain", todayWeather);
+
+            } catch (Exception e) {
+
+            }
+
+        }
+    }
+
+    public class AsyncSevenDayWeather extends AsyncTask<Void, Void, HashMap> {
+
+        //public class AsyncTime extends AsyncTask<Void, Void, String> {
+
+        @Override
+        public HashMap doInBackground(Void... voids) {
+
+            //parse urls into json objects
+            //determine which APIs to use depending on celsius boolean and user city
+            city = city.replace(" ", "%20");
+            if (degreeS.equals("F")) {
+                sevenDayForecast = "http://api.openweathermap.org/data/2.5/forecast/daily?q=" + city + ",US&cnt=7&units=imperial";
+
+            } else {
+                sevenDayForecast = "http://api.openweathermap.org/data/2.5/forecast/daily?q=" + city + ",US&cnt=7&units=metric";
+            }
+
+            //determine which APIs to use depending on celsius boolean
+            weatherAPIObject = parser.parse(weatherAPI);
+            sevenDayForecastObject = parser.parse(sevenDayForecast);
+
+            //create hashmap to hold results
+            HashMap JSONresults = new HashMap();
+
+            try {
+
+                //For seven day forecast information: get temps and descriptions
+                JSONArray sevenDay = sevenDayForecastObject.getJSONArray("list");
+                //day one
+                JSONObject dayObject = sevenDay.getJSONObject(1);
+                JSONObject temp = dayObject.getJSONObject("temp");
+                temp1 = temp.getString("min").substring(0, 2) + "°/" + temp.getString("max").substring(0, 2) + "°";
+                JSONArray sevenDayweather = dayObject.getJSONArray("weather");
+                JSONObject sevenDaydescription = sevenDayweather.getJSONObject(0);
+                descrip1 = sevenDaydescription.getString("description");
+//                //day two
+                JSONArray sevenDay2 = sevenDayForecastObject.getJSONArray("list");
+                JSONObject dayObject2 = sevenDay2.getJSONObject(2);
+                JSONObject temp22 = dayObject2.getJSONObject("temp");
+                temp2 = temp22.getString("min").substring(0, 2) + "/" + temp.getString("max").substring(0, 2);
+                JSONArray sevenDayweather2 = dayObject.getJSONArray("weather");
+                JSONObject sevenDaydescription2 = sevenDayweather2.getJSONObject(0);
+                descrip2 = sevenDaydescription2.getString("description");
+                //day three
+                JSONObject dayObject3 = sevenDay.getJSONObject(3);
+                JSONObject temp33 = dayObject3.getJSONObject("temp");
+                temp3 = temp33.getString("min").substring(0, 2) + "/" + temp.getString("max").substring(0, 2);
+                JSONArray sevenDayweather3 = dayObject.getJSONArray("weather");
+                JSONObject sevenDaydescription3 = sevenDayweather3.getJSONObject(0);
+                descrip3 = sevenDaydescription3.getString("description");
+                //day four
+                JSONObject dayObject4 = sevenDay.getJSONObject(4);
+                JSONObject temp44 = dayObject4.getJSONObject("temp");
+                temp4 = temp44.getString("min").substring(0, 2) + "/" + temp.getString("max").substring(0, 2);
+                JSONArray sevenDayweather4 = dayObject.getJSONArray("weather");
+                JSONObject sevenDaydescription4 = sevenDayweather4.getJSONObject(0);
+                descrip4 = sevenDaydescription4.getString("description");
+                //day five
+                JSONObject dayObject5 = sevenDay.getJSONObject(5);
+                JSONObject temp55 = dayObject5.getJSONObject("temp");
+                temp5 = temp55.getString("min").substring(0, 2) + "/" + temp.getString("max").substring(0, 2);
+                JSONArray sevenDayweather5 = dayObject.getJSONArray("weather");
+                JSONObject sevenDaydescription5 = sevenDayweather5.getJSONObject(0);
+                descrip5 = sevenDaydescription5.getString("description");
+                //day six
+                JSONObject dayObject6 = sevenDay.getJSONObject(6);
+                JSONObject temp66 = dayObject6.getJSONObject("temp");
+                temp6 = temp.getString("min").substring(0, 2) + "/" + temp.getString("max").substring(0, 2);
+                JSONArray sevenDayweather6 = dayObject.getJSONArray("weather");
+                JSONObject sevenDaydescription6 = sevenDayweather6.getJSONObject(0);
+                descrip6 = sevenDaydescription6.getString("description");
+            } catch (Exception e) {
+
+            }
+//              FOR LOOP VERSION - DIDN'T WORK WHEN I TRIED
+//                for (int i = 1; i < 7; i++) {
+//                    JSONObject dayObject = sevenDay.getJSONObject(i);
+//                    JSONObject temp = dayObject.getJSONObject("temp");
+//                    tempertures.add(temp.getString("min").substring(0, 2) + "/" + temp.getString("max").substring(0, 2));
+//                    JSONArray sevenDayweather = dayObject.getJSONArray("weather");
+//                    JSONObject sevenDaydescription = sevenDayweather.getJSONObject(0);
+//                    descriptions.add(sevenDaydescription.getString("description"));
+//                }
+
+            JSONresults.put("dayOneTemp", temp1);
+            JSONresults.put("dayTwoTemp", temp2);
+            JSONresults.put("dayThreeTemp", temp3);
+            JSONresults.put("dayFourTemp", temp4);
+            JSONresults.put("dayFiveTemp", temp5);
+            JSONresults.put("daySixTemp", temp6);
+            JSONresults.put("description1", descrip1);
+            JSONresults.put("description2", descrip2);
+            JSONresults.put("description3", descrip3);
+            JSONresults.put("description4", descrip4);
+            JSONresults.put("description5", descrip5);
+            JSONresults.put("description6", descrip6);
+
+//              FOR LOOP VERSION
+//            JSONresults.put("temp0", tempertures.get(0));
+//            JSONresults.put("temp1", tempertures.get(1));
+//            JSONresults.put("temp2", tempertures.get(2));
+//            JSONresults.put("temp3", tempertures.get(3));
+//            JSONresults.put("temp4", tempertures.get(4));
+//            JSONresults.put("temp5", tempertures.get(5));
+
+
+            return JSONresults;
+        }
+
+        @Override
+        public void onPostExecute(HashMap s) {
+            try {
+                //display correct forecast icon for main forecast image view
+                //setForecastImage(weatherDescription, todayWeather);
+
+                temp_1.setText(s.get("dayOneTemp").toString());
+                temp_2.setText(s.get("dayOneTwo").toString());
+                temp_3.setText(s.get("dayOneThree").toString());
+                temp_4.setText(s.get("dayOneFour").toString());
+                temp_5.setText(s.get("dayOneFive").toString());
+                temp_6.setText(s.get("dayOneSix").toString());
+//
+                setSevenDayImage((s.get("description1").toString()), forecast1);
+                setSevenDayImage((s.get("description2").toString()), forecast2);
+                setSevenDayImage((s.get("description3").toString()), forecast3);
+                setSevenDayImage((s.get("description4").toString()), forecast4);
+                setSevenDayImage((s.get("description5").toString()), forecast5);
+                setSevenDayImage((s.get("description6").toString()), forecast6);
+            } catch (Exception e) {
+
+            }
+
         }
     }
 }
