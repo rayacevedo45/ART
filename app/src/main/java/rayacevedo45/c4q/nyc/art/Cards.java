@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.CardView;
+import android.text.format.DateFormat;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -24,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -79,6 +81,8 @@ public class Cards extends ActionBarActivity {
 
 
 
+
+
 //    public static final String MyPREFERENCES = "MyPrefs" ;
 //    SharedPreferences sharedpreferences;
 
@@ -94,6 +98,9 @@ public class Cards extends ActionBarActivity {
         parser = new JSONParser();
         AsyncTime getDailyHoroscope = new AsyncTime();
         getDailyHoroscope.execute();
+
+
+
 
         AsyncStocks getStocks = new AsyncStocks();
         getStocks.execute();
@@ -225,8 +232,6 @@ public class Cards extends ActionBarActivity {
 
             }
         });
-
-
 
         SharedPreferences settings;
         settings = Cards.this.getSharedPreferences("PREFS_NAME", 0);
@@ -464,6 +469,9 @@ public class Cards extends ActionBarActivity {
     public class AsyncTime extends AsyncTask<Void, Void, HashMap> {
         String caption, link;
 
+
+
+
         //public class AsyncTime extends AsyncTask<Void, Void, String> {
 
         @Override
@@ -496,6 +504,9 @@ public class Cards extends ActionBarActivity {
             Log.d("+++",horoscopeAPISite);
 
             //determine which APIs to use depending on celsius boolean
+
+
+
 
             weatherAPIObject = parser.parse(weatherAPI);
             sevenDayForecastObject = parser.parse(sevenDayForecast);
@@ -570,10 +581,19 @@ public class Cards extends ActionBarActivity {
                 location.setText(s.get("userCity").toString());
                 temp.setText(s.get("currentTemp").toString());
 
+
                 horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + "     " + dailyHoroscopeString3);
                 abstractS = "     " + s.get("caption");
                 linkS = s.get("link").toString();
                 newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS  );
+
+                horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + "     " + s.get("horoscopeString"));
+
+                abstractS = "     " + s.get("caption");
+                linkS = s.get("link").toString();
+            newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS  );
+
+
             } catch(Exception e){
 
             }
@@ -581,7 +601,6 @@ public class Cards extends ActionBarActivity {
 
 
     }
-
 
 
     public class OnSwipeTouchListener implements View.OnTouchListener {
@@ -639,7 +658,7 @@ public class Cards extends ActionBarActivity {
         protected ArrayList doInBackground(Void... params) {
             try {
                 //add new stocks to beginning of listview like so: "GLW%22%2C%22"
-                String stockParams = "%22YHOO%22%2C%22AAPL%22%2C%22GOOG%22%2C%22MSFT%22)";
+                String stockParams = "YHOO%22%2C%22AAPL%22%2C%22GOOG%22%2C%22MSFT%22)";
                 String stockFormat = "&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=";
                 JSONObject dailyStockObject = parser.parse(stockAPI_URL + stockParams + stockFormat );
                 JSONObject dailyStocksQuery = dailyStockObject.getJSONObject("query");

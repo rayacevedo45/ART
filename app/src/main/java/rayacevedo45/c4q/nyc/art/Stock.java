@@ -15,15 +15,15 @@ import java.util.ArrayList;
  */
 public class Stock {
 
-    static String APIurl = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quote%20where";
-            static String APIurlParam =
-            "%20symbol%20in%20(%22YHOO%22%2C%22AAPL%22%2C%22GOOG%22%2C%22MSFT%22)" +
-            "&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=";
-    private String id;
-    private String daysLow = "";
-    private String daysHigh = "";
-    private String yearLow = "";
-    private String YearHigh = "";
+
+
+    static String APIurl = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quote%20where%20symbol%20in%20(%22YHOO%22%2C%22AAPL%22%2C%22GOOG%22%2C%22MSFT%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=";
+     private String id;
+      private String daysLow = "";
+      private String daysHigh = "";
+        private String yearLow = "";
+        private String YearHigh = "";
+
     private String volume = "";
     private String mktCap = "";
 
@@ -160,8 +160,9 @@ public class Stock {
 
     @Override
     public String toString() {
-//        return (this.getId() + "     " + "+" + this.getDaysHigh());
+
         return("\n\n" + this.getId() + "\n"
+
                 + "\nHigh: " + this.getDaysHigh()
                 + "\nLow: " + this.getDaysLow()
                 + "\n52w High: " + this.getYearHigh()
@@ -176,4 +177,6 @@ public class Stock {
 
 
 
+
 }
+
