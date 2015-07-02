@@ -57,7 +57,17 @@ public class MainActivity extends ActionBarActivity {
             zipcodeS = "";
         }
 
+        if (!(timeFormatTV.getText().equals("Time Format"))) {
+            timeFormatS = timeFormatTV.getText().toString();
+        } else{
+            timeFormatS = "";
+        }
 
+        if (!(degreeTV.getText().equals("Would you like degrees in C of F?"))) {
+            degreeS = degreeTV.getText().toString();
+        } else{
+            degreeS = "";
+        }
 
 
         SharedPreferences settings = MainActivity.this.getSharedPreferences("PREFS_NAME", 0);
