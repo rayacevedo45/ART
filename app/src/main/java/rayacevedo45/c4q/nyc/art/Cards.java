@@ -569,13 +569,14 @@ public class Cards extends ActionBarActivity {
                 String dailyHoroscopeString3 = "";
                 if (s.get("horoscopeString").toString() != null){
                    horoscopeString = s.get("horoscopeString").toString();
+                    dailyHoroscopeString3 = horoscopeString.replace("&apos;","\'");
                     Log.d("!@!",horoscopeString);
-                   dailyHoroscopeString3 = horoscopeString.replace("&apos;","\'");
-
-
                 } else {
                     dailyHoroscopeString3 = getString(R.string.horoscopeDefault);
                 }
+
+
+
                 //horoscopeTV.setText(userSign + " daily horoscope \n" + dailyHoroscopeString3);
                 Log.d("@#@",dailyHoroscopeString3);
                 location.setText(s.get("userCity").toString());
@@ -584,13 +585,13 @@ public class Cards extends ActionBarActivity {
 
                 horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + "     " + dailyHoroscopeString3);
                 abstractS = "     " + s.get("caption");
+                abstractS = abstractS.replace("&#8217;","\'");
                 linkS = s.get("link").toString();
                 newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS  );
 
                 horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + "     " + s.get("horoscopeString"));
 
-                abstractS = "     " + s.get("caption");
-                linkS = s.get("link").toString();
+
             newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS  );
 
 
