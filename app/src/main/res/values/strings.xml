@@ -25,4 +25,7 @@
     <string name="empty_list">To get started, create a New Note.</string>
 
     <string name="horoscopeDefault">You are a very affectionate person but you hate to be tied down. You are more than willing to be the aggressor in initiating new relationships. Indeed, once you have set your sights on someone, you tend to pursue him or her ardently and passionately. But you do demand your own way in a relationship. Try to give in to your partner\'s needs and desires once in a while. </string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

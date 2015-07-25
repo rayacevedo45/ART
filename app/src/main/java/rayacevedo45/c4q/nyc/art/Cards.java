@@ -4,54 +4,37 @@ import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
-import android.text.format.DateFormat;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
-import android.widget.CheckBox;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
-
-public class Cards extends ActionBarActivity {
+public class Cards extends FragmentActivity {
 
     TextView date,time, location, temp, amPm, day1, day2, day3, day4, day5, day6, date1, date2, date3, date4, date5, date6, newsTV, newsTV2;
     private String weatherAPI, sevenDayForecast, dateStr, city, tempStr, amPmStr;
@@ -63,7 +46,7 @@ public class Cards extends ActionBarActivity {
     private double currentTemp;
     boolean military, celsius;
     CardView horoscopeCV, weatherCard, cardView4, stocksCV, topCV;
-    LinearLayout top;
+    LinearLayout top,whole;
     CalendarView cv;
     Calendar rightNow;
     View weather_layout, sevenDayView;
@@ -78,6 +61,8 @@ public class Cards extends ActionBarActivity {
     private ArrayList mStocks;
     private StockAdapter stockAdapter;
     private String stockParams;
+
+    LinearLayout fc;
 
 
 
@@ -109,18 +94,18 @@ public class Cards extends ActionBarActivity {
         weatherCard = (CardView) findViewById(R.id.weather_card);
         weather_layout = findViewById(R.id.main_view);
         sevenDayView = findViewById(R.id.sevenday_view);
-        weatherCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (sevenDayView.getVisibility() == View.VISIBLE) {
-                    sevenDayView.setVisibility(View.GONE);
-                    weather_layout.setBackgroundResource(R.drawable.aurora_short);
-                } else {
-                    sevenDayView.setVisibility(View.VISIBLE);
-                    weather_layout.setBackgroundResource(R.drawable.aurora_full);
-                }
-            }
-        });
+//        weatherCard.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (sevenDayView.getVisibility() == View.VISIBLE) {
+//                    sevenDayView.setVisibility(View.GONE);
+//                    weather_layout.setBackgroundResource(R.drawable.aurora_short);
+//                } else {
+//                    sevenDayView.setVisibility(View.VISIBLE);
+//                    weather_layout.setBackgroundResource(R.drawable.aurora_full);
+//                }
+//            }
+//        });
 
         parser = new JSONParser();
 
@@ -134,7 +119,7 @@ public class Cards extends ActionBarActivity {
                 Notification.Builder builder = new  Notification.Builder(Cards.this);
 
 
-                builder.setContentTitle("notification");
+                builder.setContentTitle("ART");
                 builder.setContentText("Start wrapping up your awesome demo.");
                 builder.setSmallIcon(R.drawable.monarealframe);
 
@@ -153,30 +138,147 @@ public class Cards extends ActionBarActivity {
 
         //can set conditions that this loads the screen for
         // creating a new note or it shows the list depending on current content.
-        ImageButton NoteTest = (ImageButton) findViewById(R.id.openListButton);
-        NoteTest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Cards.this, NoteListActivity.class);
-                startActivity(intent);
-            }
-        });
+//        ImageButton NoteTest = (ImageButton) findViewById(R.id.openListButton);
+//        NoteTest.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(Cards.this, NoteListActivity.class);
+//                startActivity(intent);
+//            }
+//        });
 
-        ImageButton addNewNoteButton = (ImageButton) findViewById(R.id.openNoteButton);
-        addNewNoteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Note note = new Note();
-                note.setTitle("");
-                NotePad.get(getApplicationContext()).addNote(note);
-                Intent i = new Intent(getApplicationContext(), NotePagerActivity.class);
-                i.putExtra(NoteFragment.EXTRA_NOTE_ID, note.getId());
-                startActivityForResult(i, 0);
-            }
-        });
+       // ImageButton addNewNoteButton = (ImageButton) findViewById(R.id.openNoteButton);
+//        addNewNoteButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Note note = new Note();
+//                note.setTitle("");
+//                NotePad.get(getApplicationContext()).addNote(note);
+//                Intent i = new Intent(getApplicationContext(), NotePagerActivity.class);
+//                i.putExtra(NoteFragment.EXTRA_NOTE_ID, note.getId());
+//                startActivityForResult(i, 0);
+//            }
+//        });
 
 
     }
+    public void openCounter (View v){
+       // horoscopeFragment fragment = new horoscopeFragment();
+        //FragmentManager manager = getFragmentManager();
+        //manager.beginTransaction().add(R.id.wholeId,fragment).commit();
+        stockInfoTV.setVisibility(View.GONE);
+        welcome.setVisibility(View.GONE);
+        top.setVisibility(View.GONE);
+        date.setVisibility(View.GONE);
+        time.setVisibility(View.GONE);
+        location.setVisibility(View.GONE);
+        temp.setVisibility(View.GONE);
+        amPm.setVisibility(View.GONE);
+        weatherCard.setVisibility(View.GONE);
+        day1.setVisibility(View.GONE);
+        day2.setVisibility(View.GONE);
+        day3.setVisibility(View.GONE);
+        day4.setVisibility(View.GONE);
+        day5.setVisibility(View.GONE);
+        day6.setVisibility(View.GONE);
+        date1.setVisibility(View.GONE);
+        date2.setVisibility(View.GONE);
+        date3.setVisibility(View.GONE);
+        date4.setVisibility(View.GONE);
+        date5.setVisibility(View.GONE);
+        date6.setVisibility(View.GONE);
+        todoList.setVisibility(View.GONE);
+        newsTV.setVisibility(View.GONE);
+        cardView4.setVisibility(View.GONE);
+        stocksCV.setVisibility(View.GONE);
+        topCV.setVisibility(View.GONE);
+        weatherCard.setVisibility(View.GONE);
+        weather_layout.setVisibility(View.GONE);
+        sevenDayView.setVisibility(View.GONE);
+        stockLV.setVisibility(View.GONE);
+
+        int heigth = horoscopeCV.getLayoutParams().height;
+        if (heigth != 1050) {
+            horoscopeCV.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1050));
+        }
+        else {
+            stockInfoTV.setVisibility(View.VISIBLE);
+            welcome.setVisibility(View.VISIBLE);
+            top.setVisibility(View.VISIBLE);
+            date.setVisibility(View.VISIBLE);
+            time.setVisibility(View.VISIBLE);
+            location.setVisibility(View.VISIBLE);
+            temp.setVisibility(View.VISIBLE);
+            amPm.setVisibility(View.VISIBLE);
+            weatherCard.setVisibility(View.VISIBLE);
+            day1.setVisibility(View.VISIBLE);
+            day2.setVisibility(View.VISIBLE);
+            day3.setVisibility(View.VISIBLE);
+            day4.setVisibility(View.VISIBLE);
+            day5.setVisibility(View.VISIBLE);
+            day6.setVisibility(View.VISIBLE);
+            date1.setVisibility(View.VISIBLE);
+            date2.setVisibility(View.VISIBLE);
+            date3.setVisibility(View.VISIBLE);
+            date4.setVisibility(View.VISIBLE);
+            date5.setVisibility(View.VISIBLE);
+            date6.setVisibility(View.VISIBLE);
+            todoList.setVisibility(View.VISIBLE);
+            newsTV.setVisibility(View.VISIBLE);
+            cardView4.setVisibility(View.VISIBLE);
+            stocksCV.setVisibility(View.VISIBLE);
+            topCV.setVisibility(View.VISIBLE);
+            weatherCard.setVisibility(View.VISIBLE);
+            weather_layout.setVisibility(View.VISIBLE);
+            sevenDayView.setVisibility(View.VISIBLE);
+            stockLV.setVisibility(View.VISIBLE);
+            //horoscopeCV.setVisibility(View.VISIBLE);
+
+            //horoscopeCV.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, TypedValue.COMPLEX_UNIT_DIP, 400));
+
+        }
+
+    }
+
+//    public void openCounter2 (View v){
+//        // horoscopeFragment fragment = new horoscopeFragment();
+//        //FragmentManager manager = getFragmentManager();
+//        //manager.beginTransaction().add(R.id.wholeId,fragment).commit();
+//        stockInfoTV.setVisibility(View.GONE);
+//        welcome.setVisibility(View.GONE);
+//        //top.setVisibility(View.GONE);
+//        date.setVisibility(View.GONE);
+//        time.setVisibility(View.GONE);
+//        location.setVisibility(View.GONE);
+//        temp.setVisibility(View.GONE);
+//        amPm.setVisibility(View.GONE);
+//        weatherCard.setVisibility(View.GONE);
+//        day1.setVisibility(View.GONE);
+//        day2.setVisibility(View.GONE);
+//        day3.setVisibility(View.GONE);
+//        day4.setVisibility(View.GONE);
+//        day5.setVisibility(View.GONE);
+//        day6.setVisibility(View.GONE);
+//        date1.setVisibility(View.GONE);
+//        date2.setVisibility(View.GONE);
+//        date3.setVisibility(View.GONE);
+//        date4.setVisibility(View.GONE);
+//        date5.setVisibility(View.GONE);
+//        date6.setVisibility(View.GONE);
+//        //todoList.setVisibility(View.GONE);
+//        newsTV.setVisibility(View.GONE);
+//        cardView4.setVisibility(View.GONE);
+//        stocksCV.setVisibility(View.GONE);
+//        //topCV.setVisibility(View.GONE);
+//        weatherCard.setVisibility(View.GONE);
+//        weather_layout.setVisibility(View.GONE);
+//        sevenDayView.setVisibility(View.GONE);
+//        stockLV.setVisibility(View.GONE);
+//        horoscopeCV.setVisibility(View.GONE);
+//
+//        topCV.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1050));
+//
+//    }
 
     @Override
     public void onResume() {
@@ -186,6 +288,7 @@ public class Cards extends ActionBarActivity {
 
 
     public void initializeViewsAndValues(){
+        whole = (LinearLayout) findViewById(R.id.wholeId);
         stockInfoTV = (TextView) findViewById(R.id.stockInfo_id);
         mNotes = NotePad.get(getApplicationContext()).getNotes();
         mStocks = new ArrayList<Stock>();
@@ -220,18 +323,20 @@ public class Cards extends ActionBarActivity {
 
         stockLV = (ListView) findViewById(R.id.stockLV_id);
 
+        fc = (LinearLayout) findViewById(R.id.fragmentContianer);
+
         basicAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, mNotes);
         todoList.setAdapter(basicAdapter);
-        todoList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(Cards.this, NotePagerActivity.class);
-                Note c = (Note) todoList.getItemAtPosition(position);
-                intent.putExtra(NoteFragment.EXTRA_NOTE_ID, c.getId());
-                startActivity(intent);
-
-            }
-        });
+//        todoList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent = new Intent(Cards.this, NotePagerActivity.class);
+//                Note c = (Note) todoList.getItemAtPosition(position);
+//                intent.putExtra(NoteFragment.EXTRA_NOTE_ID, c.getId());
+//                startActivity(intent);
+//
+//            }
+//        });
 
         SharedPreferences settings;
         settings = Cards.this.getSharedPreferences("PREFS_NAME", 0);
@@ -250,17 +355,17 @@ public class Cards extends ActionBarActivity {
         welcome.setText("Hello, " + name);
 
         findUserSign();
-        intializeDateTime();
+        intializeDateTime();}
 
 
 
 
-        topCV.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
-            @Override
-            public void onSwipeLeft() {
-                topCV.setVisibility(View.GONE);
-            }
-        });
+//        topCV.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
+//            @Override
+//            public void onSwipeLeft() {
+//                topCV.setVisibility(View.GONE);
+//            }
+//        });}
 //        weatherCard.setOnTouchListener(new OnSwipeTouchListener(Cards.this) {
 //            @Override
 //            public void onSwipeLeft() {
@@ -273,21 +378,21 @@ public class Cards extends ActionBarActivity {
 //                stocksCV.setVisibility(View.GONE);
 //            }
 //        });
-        horoscopeCV.setOnTouchListener(new OnSwipeTouchListener(Cards.this)
-        {
-            @Override
-            public void onSwipeLeft() {
-                horoscopeCV.setVisibility(View.GONE);
-            }
-        });
-        cardView4.setOnTouchListener(new OnSwipeTouchListener(Cards.this)
-        {
-            @Override
-            public void onSwipeLeft() {
-                cardView4.setVisibility(View.GONE);
-            }
-        });
-    }
+//        horoscopeCV.setOnTouchListener(new OnSwipeTouchListener(Cards.this)
+//        {
+//            @Override
+//            public void onSwipeLeft() {
+//                horoscopeCV.setVisibility(View.GONE);
+//            }
+//        });
+//        cardView4.setOnTouchListener(new OnSwipeTouchListener(Cards.this)
+//        {
+//            @Override
+//            public void onSwipeLeft() {
+//                cardView4.setVisibility(View.GONE);
+//            }
+//        });
+//    }
 
     public void SetSevenDayInfo () {
 
@@ -466,6 +571,8 @@ public class Cards extends ActionBarActivity {
     }
 
 
+
+
     public class AsyncTime extends AsyncTask<Void, Void, HashMap> {
         String caption, link;
 
@@ -587,11 +694,11 @@ public class Cards extends ActionBarActivity {
                 linkS = s.get("link").toString();
                 newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS  );
 
-                horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + "     " + s.get("horoscopeString"));
+               // horoscopeTV.setText(userSign.toUpperCase() + " DAILY HOROSCOPE \n" + "\n" + "     " + s.get("horoscopeString"));
 
                 abstractS = "     " + s.get("caption");
                 linkS = s.get("link").toString();
-            newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS  );
+            //newsTV.setText("Trending on nytimes.com \n \n" + abstractS + "\n \n" + "Read Full Story:\n " + linkS  );
 
 
             } catch(Exception e){
@@ -690,7 +797,7 @@ public class Cards extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(ArrayList s){
-            ArrayList<Stock> stockArrayList = new ArrayList<>();
+            ArrayList<Stock> stockArrayList = new ArrayList();
             for (int i = 0; i < s.size(); i++){
                 stockArrayList.add(new Stock(s.get(i).toString()));
             }
@@ -748,5 +855,6 @@ public class Cards extends ActionBarActivity {
 
             return convertView;
         }
+
     }
 }
