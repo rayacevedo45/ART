@@ -31,8 +31,7 @@ public class NoteListActivity extends ActionBarActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle savedInstanceStat){
         setContentView(R.layout.activity_note_list);
 
         mNotes = NotePad.get(getApplicationContext()).getNotes();   ///Testing this to see if it removes blank notes

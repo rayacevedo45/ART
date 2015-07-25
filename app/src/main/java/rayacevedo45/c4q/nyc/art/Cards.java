@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -85,11 +86,14 @@ public class Cards extends ActionBarActivity {
 
 
 //    public static final String MyPREFERENCES = "MyPrefs" ;
-//    SharedPreferences sharedpreferences;
+//    SharedPreferences mNotes = NotePad.get(this).getCrimes();sharedpreferences;
 
 
     public static final String[] CARDS = {"To-Do List", "Horoscope", "Weather", "Stocks"};
+    public void appendNewStockstoParam(){
+        stockParams = "GLW%22%2C%22" + stockParams;
 
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,8 +109,21 @@ public class Cards extends ActionBarActivity {
         getSevenDayWeather.execute();
 
 
-        AsyncStocks getStocks = new AsyncStocks();
+        final AsyncStocks getStocks = new AsyncStocks();
         getStocks.execute();
+
+
+        Button addstocks = (Button) findViewById(R.id.addStocksButton);
+        /*2 approaches to this: either create the individual stocks and then add to the arraylist
+        or have a placeholder arraylist that already has all of those stocks in it, and then do an add all. Just do it the dummy way for now.
+      */
+        addstocks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+              appendNewStockstoParam();
+                new AsyncStocks().execute();
+            }
+        });
 
         //when weather card is click, show seven day view with elongated background
         weatherCard = (CardView) findViewById(R.id.weather_card);
@@ -194,6 +211,9 @@ public class Cards extends ActionBarActivity {
         });
 
 
+
+
+
     }
 
     @Override
@@ -207,6 +227,7 @@ public class Cards extends ActionBarActivity {
         stockInfoTV = (TextView) findViewById(R.id.stockInfo_id);
         mNotes = NotePad.get(getApplicationContext()).getNotes();
         mStocks = new ArrayList<Stock>();
+        stockParams = "YHOO%22%2C%22AAPL%22%2C%22GOOG%22%2C%22MSFT%22)"; //default value
         welcome = (TextView) findViewById(R.id.welcomeTV);
         horoscopeCV = (CardView) findViewById(R.id.card_view2);
         horoscopeTV = (TextView) findViewById(R.id.horoscopeTVID);
@@ -583,9 +604,6 @@ public class Cards extends ActionBarActivity {
             return JSONresults;
         }
 
-        public void appendNewStockstoParam(String param) {
-            param = stockParams; //fixme
-        }
 
 
         @Override
@@ -679,7 +697,7 @@ public class Cards extends ActionBarActivity {
         protected ArrayList doInBackground(Void... params) {
             try {
                 //add new stocks to beginning of listview like so: "GLW%22%2C%22"
-                String stockParams = "YHOO%22%2C%22AAPL%22%2C%22GOOG%22%2C%22MSFT%22)";
+
                 String stockFormat = "&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=";
                 JSONObject dailyStockObject = parser.parse(stockAPI_URL + stockParams + stockFormat);
                 JSONObject dailyStocksQuery = dailyStockObject.getJSONObject("query");
@@ -720,7 +738,7 @@ public class Cards extends ActionBarActivity {
                 if (stockArrayList != null) {
                     stockAdapter = new StockAdapter(stockArrayList);
                     stockLV.setAdapter(stockAdapter);
-                    stockInfoTV.setText("Powered by Yahoo Finance" + "\nConnect to the Internet");
+                    stockInfoTV.setText("Powered by Yahoo Finance");
                     Stock x = stockAdapter.getItem(0);
                     stockInfoTV.append(x.toString()); //by default show the top of my list.
                 } else {
@@ -731,6 +749,7 @@ public class Cards extends ActionBarActivity {
                     stockArrayList.add(new Stock("MSFT"));
                     StockAdapter defaultstockAdapter = new StockAdapter(default_stockArrayList);
                     stockLV.setAdapter(defaultstockAdapter);
+                    stockInfoTV.setText("Powered by Yahoo Finance" + "\nConnect to the Internet");
                 }
 
 

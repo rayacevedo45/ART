@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
+//To-do: Check for tablet devices, and create onclick to cycle through needed fragments.
 public class MainActivity extends ActionBarActivity {
     private String name,birthdayS,zipcodeS,timeFormatS,degreeS;
     EditText firstName, birthDay, zipcode;

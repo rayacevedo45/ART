@@ -25,7 +25,9 @@ public class NotePagerActivity extends FragmentActivity {
         mViewPager.setId(R.id.viewpager);
         setContentView(mViewPager);
 
-        mNotes = NotePad.get(this).getNotes();
+
+
+
 
         FragmentManager fm = getSupportFragmentManager();
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fm) {
